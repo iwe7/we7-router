@@ -1,9 +1,9 @@
 import { PRIMARY_OUTLET, ParamMap, convertToParamMap, UrlSegmentGroup, UrlSegment, UrlTree, UrlSerializer } from '@angular/router';
 import { forEach, shallowEqual } from './collection';
-import { serializePath } from './common';
+import { serializePath, getDefaultQueryParams } from './common';
 import {
-    serializeWebPaths,
     serializeMobilePaths,
+    serializeWebPaths,
     mapChildrenIntoArray,
     equalQueryParams,
     equalSegmentGroups,
@@ -15,29 +15,35 @@ import {
     decodeQuery,
     matchUrlQueryParamValue,
     serializeSegment,
-    serializeQueryParams
+    serializeQueryParams,
 } from './common';
 import { encodeUriQuery } from './common';
 import { UrlParser } from './url-parser';
 
 export class MobileUrlSerializer implements UrlSerializer {
-    parse(url: string): MobileUrlTree {
-        const p = new UrlParser('/'+url);
-        let urlTree = new MobileUrlTree(p.parseRootSegment(), p.getParams(), p.parseFragment());
+    parse(url: string): WebUrlTree {
+        const p = new UrlParser(url);
+        let urlTree = new WebUrlTree(p.parseRootSegment(), p.getParams(), p.parseFragment());
         return urlTree;
     }
-    serialize(tree: MobileUrlTree): string {
-        const segment = `/${serializeSegment(tree.root, true, serializeMobilePaths)}`;
-        const query = serializeQueryParams(tree.queryParams);
+    serialize(tree: WebUrlTree): string {
+        const segment: any = serializeSegment(tree.root, true, serializeMobilePaths);
+        let params = getDefaultQueryParams();
+        for (let key in tree.queryParams) {
+            if (key === 'do' || key === 'ext') { } else {
+                params[key] = tree.queryParams[key];
+            }
+        }
+        const query = serializeQueryParams(params);
         const fragment = typeof tree.fragment === `string` ? `#${encodeUriQuery(tree.fragment!)}` : '';
-        let str = `${segment}${query}${fragment}`;
+        let str = `${segment.root}${query}&do=${segment.do}&ext=${segment.ext}${fragment}`;
         return str;
     }
 }
 
-const MOBILE_SERIALIZER = new MobileUrlSerializer();
+const WEB_SERIALIZER = new MobileUrlSerializer();
 
-export class MobileUrlTree extends UrlTree {
+export class WebUrlTree extends UrlTree {
     _queryParamMap: ParamMap;
     constructor(
         root: UrlSegmentGroup,
@@ -55,5 +61,5 @@ export class MobileUrlTree extends UrlTree {
         }
         return this._queryParamMap;
     }
-    toString(): string { return MOBILE_SERIALIZER.serialize(this); }
+    toString(): string { return WEB_SERIALIZER.serialize(this); }
 }

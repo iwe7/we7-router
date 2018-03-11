@@ -7,10 +7,11 @@ export declare class UrlParser {
     };
     private copyUrl;
     constructor(url: string);
-    parseRootSegment(): UrlSegmentGroup;
-    parseQueryParams(hasDo?: boolean): {
+    getParams(): {
         [key: string]: any;
     };
+    parseRootSegment(): UrlSegmentGroup;
+    parseQueryParams(): void;
     parseFragment(): string | null;
     num: number;
     private parseChildren();

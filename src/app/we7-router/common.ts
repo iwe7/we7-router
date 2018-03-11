@@ -1,9 +1,22 @@
 import { UrlSegmentGroup, UrlSegment, PRIMARY_OUTLET, ParamMap, convertToParamMap, DefaultUrlSerializer, UrlTree } from '@angular/router';
 import { forEach, shallowEqual } from './collection';
 
-export function serializeMobilePaths(segment: UrlSegmentGroup): string {
-    let str = `app/index.php`;
-    return str;
+export function serializeMobilePaths(segment: UrlSegmentGroup): { root: string, do: string, ext: string } {
+    const { segments } = segment;
+    let _do = '';
+    let _ext = '';
+    segments.map((res, index) => {
+        if (index === 0) {
+            _do = res.path;
+        }else{
+            _ext += res.path;
+        }
+    });
+    return {
+        root: 'app/index.php',
+        do: _do,
+        ext: _ext
+    }
 }
 
 export function serializePaths(segments: UrlSegment[]): string {

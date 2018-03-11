@@ -4,7 +4,7 @@ import { NgModule } from '@angular/core';
 
 import { AppComponent, AppSetting, AppDetail, AppHome, ChildrenPage } from './app.component';
 import { RouterModule, UrlSerializer } from '@angular/router';
-import { WebUrlSerializer } from './we7-router/public_api';
+import { WebUrlSerializer, MobileUrlSerializer } from './we7-router/public_api';
 @NgModule({
   declarations: [
     AppComponent,
@@ -37,7 +37,7 @@ import { WebUrlSerializer } from './we7-router/public_api';
   ],
   providers: [{
     provide: UrlSerializer,
-    useClass: WebUrlSerializer
+    useClass: MobileUrlSerializer
   }],
   bootstrap: [AppComponent]
 })

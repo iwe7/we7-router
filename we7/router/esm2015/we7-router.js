@@ -81,40 +81,99 @@ function forEach(map, callback) {
  * @return {?}
  */
 function serializeMobilePaths(segment) {
-    let /** @type {?} */ str = `app/index.php`;
-    str += jiexiSegmentsToUrl(segment.segments);
-    return str;
+    const { segments } = segment;
+    let /** @type {?} */ _do = '';
+    let /** @type {?} */ _ext = '';
+    segments.map((res, index) => {
+        if (index === 0) {
+            _do = res.path;
+        }
+        else {
+            _ext += res.path;
+        }
+    });
+    return {
+        root: 'app/index.php',
+        do: _do,
+        ext: _ext
+    };
 }
 /**
  * @param {?} segments
  * @return {?}
  */
-function jiexiSegmentsToUrl(segments) {
-    let /** @type {?} */ str = '';
-    let /** @type {?} */ ext = serializePaths(segments);
-    str += '?ext=' + ext;
-    return str;
-}
-/**
- * @param {?} segments
- * @return {?}
- */
-function serializePaths(segments) {
-    return segments.map(p => serializePath(p)).join('/');
-}
+
 /**
  * @param {?} segment
  * @return {?}
  */
 function serializeWebPaths(segment) {
-    let /** @type {?} */ str = `web/index.php`;
-    str += jiexiSegmentsToUrl(segment.segments);
-    return str;
+    const { segments } = segment;
+    let /** @type {?} */ _do = '';
+    let /** @type {?} */ _ext = '';
+    segments.map((res, index) => {
+        if (index === 0) {
+            _do = res.path;
+        }
+        else {
+            _ext += res.path;
+        }
+    });
+    return {
+        root: 'web/index.php',
+        do: _do,
+        ext: _ext
+    };
+}
+/**
+ * @param {?} name
+ * @return {?}
+ */
+function getQueryParams(name) {
+    let /** @type {?} */ url = parseURL();
+    return url[name];
 }
 /**
  * @return {?}
  */
-
+function getDefaultQueryParams() {
+    let /** @type {?} */ res = {};
+    let /** @type {?} */ a = getQueryParams('a');
+    if (a) {
+        res['a'] = a;
+    }
+    let /** @type {?} */ c = getQueryParams('c');
+    if (c) {
+        res['c'] = c;
+    }
+    let /** @type {?} */ i = getQueryParams('i');
+    if (i) {
+        res['i'] = i;
+    }
+    let /** @type {?} */ m = getQueryParams('m');
+    if (m) {
+        res['m'] = m;
+    }
+    return res;
+}
+/**
+ * @return {?}
+ */
+function parseURL() {
+    const /** @type {?} */ ret = {};
+    const /** @type {?} */ seg = location.search.replace(/^\?/, '').split('&').filter(function (v, i) {
+        if (v !== '' && v.indexOf('=')) {
+            return true;
+        }
+    });
+    seg.forEach((element, index) => {
+        const /** @type {?} */ idx = element.indexOf('=');
+        const /** @type {?} */ key = element.substring(0, idx);
+        const /** @type {?} */ val = element.substring(idx + 1);
+        ret[key] = val;
+    });
+    return ret;
+}
 /**
  * @param {?} s
  * @return {?}
@@ -126,9 +185,7 @@ function encodeUriQuery(s) {
  * @param {?} s
  * @return {?}
  */
-function encodeUriSegment(s) {
-    return encodeUriString(s).replace(/\(/g, '%28').replace(/\)/g, '%29').replace(/%26/gi, '&');
-}
+
 /**
  * @param {?} s
  * @return {?}
@@ -147,9 +204,7 @@ function decodeQuery(s) {
  * @param {?} path
  * @return {?}
  */
-function serializePath(path) {
-    return `${encodeUriSegment(path.path)}${serializeMatrixParams(path.parameters)}`;
-}
+
 /**
  * @param {?} s
  * @return {?}
@@ -160,15 +215,6 @@ function encodeUriString(s) {
         .replace(/%3A/gi, ':')
         .replace(/%24/g, '$')
         .replace(/%2C/gi, ',');
-}
-/**
- * @param {?} params
- * @return {?}
- */
-function serializeMatrixParams(params) {
-    return Object.keys(params)
-        .map(key => `;${encodeUriSegment(key)}=${encodeUriSegment(params[key])}`)
-        .join('');
 }
 /**
  * @param {?} as
@@ -304,7 +350,8 @@ function serializeQueryParams(params) {
             value.map(v => `${encodeUriQuery(name)}=${encodeUriQuery(v)}`).join('&') :
             `${encodeUriQuery(name)}=${encodeUriQuery(value)}`;
     });
-    return strParams.length ? `&${strParams.join("&")}` : '';
+    let /** @type {?} */ str = strParams.length ? `?${strParams.join("&")}` : '';
+    return str;
 }
 /**
  * @param {?} container
@@ -327,29 +374,37 @@ class UrlParser {
         this.num = 0;
         this.remaining = url;
         this.copyUrl = url;
-        this.params = this.parseQueryParams(true);
+        // 去掉无用项目
+        this.consumeOptional('/');
+        this.consumeOptional('web');
+        this.consumeOptional('/');
+        this.consumeOptional('app');
+        this.consumeOptional('/');
+        this.consumeOptional('index.php');
+        this.parseQueryParams();
+    }
+    /**
+     * @return {?}
+     */
+    getParams() {
+        return this.params;
     }
     /**
      * @return {?}
      */
     parseRootSegment() {
         this.consumeOptional('/');
-        if (this.remaining === '' || this.peekStartsWith('?') || this.peekStartsWith('#')) {
-            return new UrlSegmentGroup([], {});
-        }
         return new UrlSegmentGroup([], this.parseChildren());
     }
     /**
-     * @param {?=} hasDo
      * @return {?}
      */
-    parseQueryParams(hasDo = false) {
+    parseQueryParams() {
         if (this.consumeOptional('?')) {
             do {
                 this.parseQueryParam();
             } while (this.consumeOptional('&'));
         }
-        return this.params;
     }
     /**
      * @return {?}
@@ -366,10 +421,14 @@ class UrlParser {
         if (this.params['do']) {
             segments.push(new UrlSegment(decode(this.params['do']), this.parseMatrixParams()));
         }
-        console.log(this.params);
         let /** @type {?} */ children = {};
         let /** @type {?} */ ext = this.params['ext'] || '';
         let /** @type {?} */ exts = ext.split('/');
+        exts.map(res => {
+            if (res.length > 0) {
+                segments.push(new UrlSegment(decode(res), this.parseMatrixParams()));
+            }
+        });
         let /** @type {?} */ res = {};
         if (segments.length > 0 || Object.keys(children).length > 0) {
             res[PRIMARY_OUTLET] = new UrlSegmentGroup(segments, children);
@@ -532,62 +591,8 @@ class MobileUrlSerializer {
      * @return {?}
      */
     parse(url) {
-        const /** @type {?} */ p = new UrlParser('/' + url);
-        let /** @type {?} */ urlTree = new MobileUrlTree(p.parseRootSegment(), p.parseQueryParams(), p.parseFragment());
-        return urlTree;
-    }
-    /**
-     * @param {?} tree
-     * @return {?}
-     */
-    serialize(tree) {
-        const /** @type {?} */ segment = `/${serializeSegment(tree.root, true, serializeMobilePaths)}`;
-        const /** @type {?} */ query = serializeQueryParams(tree.queryParams);
-        const /** @type {?} */ fragment = typeof tree.fragment === `string` ? `#${encodeUriQuery((/** @type {?} */ ((tree.fragment))))}` : '';
-        let /** @type {?} */ str = `${segment}${query}${fragment}`;
-        return str;
-    }
-}
-const MOBILE_SERIALIZER = new MobileUrlSerializer();
-class MobileUrlTree extends UrlTree {
-    /**
-     * @param {?} root
-     * @param {?} queryParams
-     * @param {?} fragment
-     */
-    constructor(root, queryParams, fragment) {
-        super();
-        this.root = root;
-        this.queryParams = queryParams;
-        this.fragment = fragment;
-    }
-    /**
-     * @return {?}
-     */
-    get queryParamMap() {
-        if (!this._queryParamMap) {
-            this._queryParamMap = convertToParamMap(this.queryParams);
-        }
-        return this._queryParamMap;
-    }
-    /**
-     * @return {?}
-     */
-    toString() { return MOBILE_SERIALIZER.serialize(this); }
-}
-
-/**
- * @fileoverview added by tsickle
- * @suppress {checkTypes} checked by tsc
- */
-class WebUrlSerializer {
-    /**
-     * @param {?} url
-     * @return {?}
-     */
-    parse(url) {
         const /** @type {?} */ p = new UrlParser(url);
-        let /** @type {?} */ urlTree = new WebUrlTree(p.parseRootSegment(), p.parseQueryParams(), p.parseFragment());
+        let /** @type {?} */ urlTree = new WebUrlTree(p.parseRootSegment(), p.getParams(), p.parseFragment());
         return urlTree;
     }
     /**
@@ -595,14 +600,21 @@ class WebUrlSerializer {
      * @return {?}
      */
     serialize(tree) {
-        const /** @type {?} */ segment = `/${serializeSegment(tree.root, true, serializeWebPaths)}`;
-        const /** @type {?} */ query = serializeQueryParams(tree.queryParams);
+        const /** @type {?} */ segment = serializeSegment(tree.root, true, serializeMobilePaths);
+        let /** @type {?} */ params = getDefaultQueryParams();
+        for (let /** @type {?} */ key in tree.queryParams) {
+            if (key === 'do' || key === 'ext') { }
+            else {
+                params[key] = tree.queryParams[key];
+            }
+        }
+        const /** @type {?} */ query = serializeQueryParams(params);
         const /** @type {?} */ fragment = typeof tree.fragment === `string` ? `#${encodeUriQuery((/** @type {?} */ ((tree.fragment))))}` : '';
-        let /** @type {?} */ str = `${segment}${query}${fragment}`;
+        let /** @type {?} */ str = `${segment.root}${query}&do=${segment.do}&ext=${segment.ext}${fragment}`;
         return str;
     }
 }
-const WEB_SERIALIZER = new WebUrlSerializer();
+const WEB_SERIALIZER = new MobileUrlSerializer();
 class WebUrlTree extends UrlTree {
     /**
      * @param {?} root
@@ -628,6 +640,67 @@ class WebUrlTree extends UrlTree {
      * @return {?}
      */
     toString() { return WEB_SERIALIZER.serialize(this); }
+}
+
+/**
+ * @fileoverview added by tsickle
+ * @suppress {checkTypes} checked by tsc
+ */
+class WebUrlSerializer {
+    /**
+     * @param {?} url
+     * @return {?}
+     */
+    parse(url) {
+        const /** @type {?} */ p = new UrlParser(url);
+        let /** @type {?} */ urlTree = new WebUrlTree$1(p.parseRootSegment(), p.getParams(), p.parseFragment());
+        return urlTree;
+    }
+    /**
+     * @param {?} tree
+     * @return {?}
+     */
+    serialize(tree) {
+        const /** @type {?} */ segment = serializeSegment(tree.root, true, serializeWebPaths);
+        let /** @type {?} */ params = getDefaultQueryParams();
+        for (let /** @type {?} */ key in tree.queryParams) {
+            if (key === 'do' || key === 'ext') { }
+            else {
+                params[key] = tree.queryParams[key];
+            }
+        }
+        const /** @type {?} */ query = serializeQueryParams(params);
+        const /** @type {?} */ fragment = typeof tree.fragment === `string` ? `#${encodeUriQuery((/** @type {?} */ ((tree.fragment))))}` : '';
+        let /** @type {?} */ str = `${segment.root}${query}&do=${segment.do}&ext=${segment.ext}${fragment}`;
+        return str;
+    }
+}
+const WEB_SERIALIZER$1 = new WebUrlSerializer();
+class WebUrlTree$1 extends UrlTree {
+    /**
+     * @param {?} root
+     * @param {?} queryParams
+     * @param {?} fragment
+     */
+    constructor(root, queryParams, fragment) {
+        super();
+        this.root = root;
+        this.queryParams = queryParams;
+        this.fragment = fragment;
+    }
+    /**
+     * @return {?}
+     */
+    get queryParamMap() {
+        if (!this._queryParamMap) {
+            this._queryParamMap = convertToParamMap(this.queryParams);
+        }
+        return this._queryParamMap;
+    }
+    /**
+     * @return {?}
+     */
+    toString() { return WEB_SERIALIZER$1.serialize(this); }
 }
 
 /**
