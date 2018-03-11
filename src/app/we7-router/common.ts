@@ -7,6 +7,7 @@ export function serializeMobilePaths(segment: UrlSegmentGroup): string {
     let m = getQueryParams('m');
     let str = `app/index.php?i=${i ? i : '2'}&c=entry&m=${m ? m : 'imeepos_runner'}`;
     if (segment.segments.length > 0) {
+        console.log(segment.segments);
         let p = segment.segments[segment.segments.length - 1];
         str += '&do=' + p.path;
     }
@@ -15,8 +16,10 @@ export function serializeMobilePaths(segment: UrlSegmentGroup): string {
 
 export function serializeWebPaths(segment: UrlSegmentGroup): string {
     let m = getQueryParams('m');
-    let str = `web/index.php?c=site&a=entry&m=${m ? m : 'imeepos_runner'}`;
+    let i = getQueryParams('i');
+    let str = `web/index.php?c=site&a=entry&i=${i ? i : '2'}&m=${m ? m : 'imeepos_runner'}`;
     if (segment.segments.length > 0) {
+        console.log(segment.segments);
         let p = segment.segments[segment.segments.length - 1];
         str += '&do=' + p.path;
     }
@@ -72,14 +75,11 @@ function encodeUriString(s: string): string {
         .replace(/%2C/gi, ',');
 }
 
-
 function serializeMatrixParams(params: { [key: string]: string }): string {
     return Object.keys(params)
         .map(key => `;${encodeUriSegment(key)}=${encodeUriSegment(params[key])}`)
         .join('');
 }
-
-
 
 export function equalSegments(as: UrlSegment[], bs: UrlSegment[]): boolean {
     return equalPath(as, bs) && as.every((a, i) => shallowEqual(a.parameters, bs[i].parameters));
@@ -105,9 +105,6 @@ export function mapChildrenIntoArray<T>(
     });
     return res;
 }
-
-
-
 
 export function equalQueryParams(
     container: { [k: string]: string }, containee: { [k: string]: string }): boolean {
@@ -184,8 +181,7 @@ export function serializeSegment(segment: UrlSegmentGroup, root: boolean, fn: Fu
     }
     if (root) {
         const primary = segment.children[PRIMARY_OUTLET] ?
-            serializeSegment(segment.children[PRIMARY_OUTLET], false, fn) :
-            '';
+            serializeSegment(segment.children[PRIMARY_OUTLET], false, fn) : '';
         const children: string[] = [];
         forEach(segment.children, (v: UrlSegmentGroup, k: string) => {
             if (k !== PRIMARY_OUTLET) {
@@ -216,9 +212,6 @@ export function serializeQueryParams(params: { [key: string]: any }): string {
 
     return strParams.length ? `&${strParams.join("&")}` : '';
 }
-
-
-
 
 
 export function containsTree(container: UrlTree, containee: UrlTree, exact: boolean): boolean {
