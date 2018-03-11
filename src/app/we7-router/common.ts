@@ -8,8 +8,8 @@ export function serializeMobilePaths(segment: UrlSegmentGroup): { root: string, 
     segments.map((res, index) => {
         if (index === 0) {
             _do = res.path;
-        }else{
-            _ext += res.path;
+        } else {
+            _ext += res.path + '/';
         }
     });
     return {
@@ -30,7 +30,7 @@ export function serializeWebPaths(segment: UrlSegmentGroup): { root: string, do:
     segments.map((res, index) => {
         if (index === 0) {
             _do = res.path;
-        }else{
+        } else {
             _ext += res.path;
         }
     });

@@ -25,7 +25,7 @@ function serializeMobilePaths(segment) {
             _do = res.path;
         }
         else {
-            _ext += res.path;
+            _ext += res.path + '/';
         }
     });
     return {
