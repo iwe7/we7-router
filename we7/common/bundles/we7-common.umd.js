@@ -1,7 +1,7 @@
 (function (global, factory) {
 	typeof exports === 'object' && typeof module !== 'undefined' ? factory(exports, require('@angular/core'), require('@angular/router')) :
 	typeof define === 'function' && define.amd ? define(['exports', '@angular/core', '@angular/router'], factory) :
-	(factory((global['we7-router'] = {}),global.ng.core,global.ng.router));
+	(factory((global['we7-common'] = {}),global.ng.core,global.ng.router));
 }(this, (function (exports,core,router) { 'use strict';
 
 var We7HelperService = /** @class */ (function () {
@@ -89,4 +89,4 @@ exports.We7HelperService = We7HelperService;
 Object.defineProperty(exports, '__esModule', { value: true });
 
 })));
-//# sourceMappingURL=we7-router.umd.js.map
+//# sourceMappingURL=we7-common.umd.js.map

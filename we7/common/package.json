@@ -1,7 +1,7 @@
 {
-  "name": "we7-router",
-  "version": "1.3.2",
-  "repository": "https://github.com/meepobrother/we7-router.git",
+  "name": "we7-common",
+  "version": "1.3.5",
+  "repository": "https://github.com/meepobrother/we7-common.git",
   "author": "imeepos <1037483576@qq.com>",
   "license": "MIT",
   "private": false,
@@ -13,11 +13,11 @@
     "@angular/common": "*",
     "rxjs": "*"
   },
-  "main": "bundles/we7-router.umd.js",
-  "module": "esm5/we7-router.js",
-  "es2015": "esm2015/we7-router.js",
-  "typings": "we7-router.d.ts",
-  "metadata": "we7-router.metadata.json",
+  "main": "bundles/we7-common.umd.js",
+  "module": "esm5/we7-common.js",
+  "es2015": "esm2015/we7-common.js",
+  "typings": "we7-common.d.ts",
+  "metadata": "we7-common.metadata.json",
   "dependencies": {
     "tslib": "^1.7.1"
   }

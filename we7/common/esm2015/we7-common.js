@@ -134,4 +134,4 @@ We7CommonModule.ctorParameters = () => [];
  */
 
 export { We7CommonModule, We7HelperService };
-//# sourceMappingURL=we7-router.js.map
+//# sourceMappingURL=we7-common.js.map

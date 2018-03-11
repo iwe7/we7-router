@@ -1,9 +1,9 @@
 {
   "version": 3,
-  "file": "we7-router.js",
+  "file": "we7-common.js",
   "sources": [
-    "ng://we7-router/out/we7-common.module.ts",
-    "ng://we7-router/out/we7-helper.ts"
+    "ng://we7-common/out/we7-common.module.ts",
+    "ng://we7-common/out/we7-helper.ts"
   ],
   "sourcesContent": [
     "import { NgModule } from '@angular/core';\nimport { RouterModule } from '@angular/router';\nimport { We7HelperService } from './we7-helper';\n@NgModule({\n    imports: [\n        RouterModule\n    ],\n    exports: [],\n    declarations: [],\n    providers: [\n        We7HelperService\n    ],\n})\nexport class We7CommonModule { }\n",

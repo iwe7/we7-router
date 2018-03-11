@@ -81,4 +81,4 @@ We7CommonModule.decorators = [
 We7CommonModule.ctorParameters = function () { return []; };
 
 export { We7CommonModule, We7HelperService };
-//# sourceMappingURL=we7-router.js.map
+//# sourceMappingURL=we7-common.js.map
