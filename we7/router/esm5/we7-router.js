@@ -1,5 +1,5 @@
 import { __extends } from 'tslib';
-import '@angular/core';
+import { NgModule } from '@angular/core';
 import 'rxjs/observable/fromPromise';
 import 'rxjs/observable/of';
 import 'rxjs/operator/concatAll';
@@ -7,7 +7,7 @@ import 'rxjs/operator/every';
 import 'rxjs/operator/last';
 import 'rxjs/operator/map';
 import 'rxjs/operator/mergeAll';
-import { PRIMARY_OUTLET, UrlSegmentGroup, UrlSegment, convertToParamMap, UrlTree } from '@angular/router';
+import { PRIMARY_OUTLET, UrlSegmentGroup, UrlSegment, convertToParamMap, UrlTree, UrlSerializer } from '@angular/router';
 
 function forEach(map, callback) {
     for (var prop in map) {
@@ -377,6 +377,46 @@ var WebUrlTree = /** @class */ (function (_super) {
     WebUrlTree.prototype.toString = function () { return WEB_SERIALIZER.serialize(this); };
     return WebUrlTree;
 }(UrlTree));
+var We7MobileRouterModule = /** @class */ (function () {
+    function We7MobileRouterModule() {
+    }
+    We7MobileRouterModule.forRoot = function () {
+        return {
+            ngModule: We7MobileRouterModule,
+            providers: [
+                {
+                    provide: UrlSerializer,
+                    useClass: MobileUrlSerializer
+                }
+            ]
+        };
+    };
+    return We7MobileRouterModule;
+}());
+We7MobileRouterModule.decorators = [
+    { type: NgModule, args: [{},] },
+];
+We7MobileRouterModule.ctorParameters = function () { return []; };
+var We7WebRouterModule = /** @class */ (function () {
+    function We7WebRouterModule() {
+    }
+    We7WebRouterModule.forRoot = function () {
+        return {
+            ngModule: We7WebRouterModule,
+            providers: [
+                {
+                    provide: UrlSerializer,
+                    useClass: WebUrlSerializer
+                }
+            ]
+        };
+    };
+    return We7WebRouterModule;
+}());
+We7WebRouterModule.decorators = [
+    { type: NgModule, args: [{},] },
+];
+We7WebRouterModule.ctorParameters = function () { return []; };
 
-export { MobileUrlSerializer, WebUrlSerializer };
+export { MobileUrlSerializer, WebUrlSerializer, We7MobileRouterModule, We7WebRouterModule };
 //# sourceMappingURL=we7-router.js.map

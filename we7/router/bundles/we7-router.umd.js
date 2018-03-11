@@ -394,9 +394,51 @@ var WebUrlTree = /** @class */ (function (_super) {
     WebUrlTree.prototype.toString = function () { return WEB_SERIALIZER.serialize(this); };
     return WebUrlTree;
 }(router.UrlTree));
+var We7MobileRouterModule = /** @class */ (function () {
+    function We7MobileRouterModule() {
+    }
+    We7MobileRouterModule.forRoot = function () {
+        return {
+            ngModule: We7MobileRouterModule,
+            providers: [
+                {
+                    provide: router.UrlSerializer,
+                    useClass: MobileUrlSerializer
+                }
+            ]
+        };
+    };
+    return We7MobileRouterModule;
+}());
+We7MobileRouterModule.decorators = [
+    { type: core.NgModule, args: [{},] },
+];
+We7MobileRouterModule.ctorParameters = function () { return []; };
+var We7WebRouterModule = /** @class */ (function () {
+    function We7WebRouterModule() {
+    }
+    We7WebRouterModule.forRoot = function () {
+        return {
+            ngModule: We7WebRouterModule,
+            providers: [
+                {
+                    provide: router.UrlSerializer,
+                    useClass: WebUrlSerializer
+                }
+            ]
+        };
+    };
+    return We7WebRouterModule;
+}());
+We7WebRouterModule.decorators = [
+    { type: core.NgModule, args: [{},] },
+];
+We7WebRouterModule.ctorParameters = function () { return []; };
 
 exports.MobileUrlSerializer = MobileUrlSerializer;
 exports.WebUrlSerializer = WebUrlSerializer;
+exports.We7MobileRouterModule = We7MobileRouterModule;
+exports.We7WebRouterModule = We7WebRouterModule;
 
 Object.defineProperty(exports, '__esModule', { value: true });
 

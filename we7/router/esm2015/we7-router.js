@@ -1,4 +1,4 @@
-import '@angular/core';
+import { NgModule } from '@angular/core';
 import 'rxjs/observable/fromPromise';
 import 'rxjs/observable/of';
 import 'rxjs/operator/concatAll';
@@ -6,7 +6,7 @@ import 'rxjs/operator/every';
 import 'rxjs/operator/last';
 import 'rxjs/operator/map';
 import 'rxjs/operator/mergeAll';
-import { PRIMARY_OUTLET, UrlSegmentGroup, UrlSegment, convertToParamMap, UrlTree } from '@angular/router';
+import { PRIMARY_OUTLET, UrlSegmentGroup, UrlSegment, convertToParamMap, UrlTree, UrlSerializer } from '@angular/router';
 
 /**
  * @fileoverview added by tsickle
@@ -639,6 +639,53 @@ class WebUrlTree extends UrlTree {
  * @fileoverview added by tsickle
  * @suppress {checkTypes} checked by tsc
  */
+class We7MobileRouterModule {
+    /**
+     * @return {?}
+     */
+    static forRoot() {
+        return {
+            ngModule: We7MobileRouterModule,
+            providers: [
+                {
+                    provide: UrlSerializer,
+                    useClass: MobileUrlSerializer
+                }
+            ]
+        };
+    }
+}
+We7MobileRouterModule.decorators = [
+    { type: NgModule, args: [{},] },
+];
+/** @nocollapse */
+We7MobileRouterModule.ctorParameters = () => [];
+class We7WebRouterModule {
+    /**
+     * @return {?}
+     */
+    static forRoot() {
+        return {
+            ngModule: We7WebRouterModule,
+            providers: [
+                {
+                    provide: UrlSerializer,
+                    useClass: WebUrlSerializer
+                }
+            ]
+        };
+    }
+}
+We7WebRouterModule.decorators = [
+    { type: NgModule, args: [{},] },
+];
+/** @nocollapse */
+We7WebRouterModule.ctorParameters = () => [];
+
+/**
+ * @fileoverview added by tsickle
+ * @suppress {checkTypes} checked by tsc
+ */
 
 /**
  * @fileoverview added by tsickle
@@ -648,5 +695,5 @@ class WebUrlTree extends UrlTree {
  * Generated bundle index. Do not edit.
  */
 
-export { MobileUrlSerializer, WebUrlSerializer };
+export { MobileUrlSerializer, WebUrlSerializer, We7MobileRouterModule, We7WebRouterModule };
 //# sourceMappingURL=we7-router.js.map
