@@ -6,11 +6,15 @@ export function serializeMobilePaths(segment: UrlSegmentGroup): string {
     let i = getQueryParams('i');
     let m = getQueryParams('m');
     let str = `app/index.php?i=${i ? i : '2'}&c=entry&m=${m ? m : 'imeepos_runner'}`;
-    if (segment.segments.length > 0) {
-        console.log(segment.segments);
-        let p = segment.segments[segment.segments.length - 1];
-        str += '&do=' + p.path;
-    }
+    str += jiexiSegmentsToUrl(segment.segments);
+    return str;
+}
+
+export function jiexiSegmentsToUrl(segments: UrlSegment[]) {
+    let str = '';
+    segments.map((segment, index) => {
+        str += `&do${index > 0 ? index : ''}=${segment.path}`;
+    });
     return str;
 }
 
@@ -18,11 +22,7 @@ export function serializeWebPaths(segment: UrlSegmentGroup): string {
     let m = getQueryParams('m');
     let i = getQueryParams('i');
     let str = `web/index.php?c=site&a=entry&i=${i ? i : '2'}&m=${m ? m : 'imeepos_runner'}`;
-    if (segment.segments.length > 0) {
-        console.log(segment.segments);
-        let p = segment.segments[segment.segments.length - 1];
-        str += '&do=' + p.path;
-    }
+    str += jiexiSegmentsToUrl(segment.segments);
     return str;
 }
 
