@@ -2,17 +2,43 @@ import { BrowserModule } from '@angular/platform-browser';
 import { NgModule } from '@angular/core';
 
 
-import { AppComponent } from './app.component';
-
-
+import { AppComponent, AppSetting, AppDetail, AppHome, ChildrenPage } from './app.component';
+import { RouterModule, UrlSerializer } from '@angular/router';
+import { WebUrlSerializer } from './we7-router/public_api';
 @NgModule({
   declarations: [
-    AppComponent
+    AppComponent,
+    AppSetting,
+    AppDetail,
+    AppHome,
+    ChildrenPage
   ],
   imports: [
-    BrowserModule
+    BrowserModule,
+    RouterModule.forRoot([{
+      path: 'setting',
+      component: AppSetting
+    }, {
+      path: 'home',
+      component: AppHome
+    }, {
+      path: 'detail',
+      component: AppDetail
+    }, {
+      path: 'children',
+      children: [{
+        path: '',
+        component: AppSetting
+      }, {
+        path: 'home',
+        component: AppHome
+      }]
+    }])
   ],
-  providers: [],
+  providers: [{
+    provide: UrlSerializer,
+    useClass: WebUrlSerializer
+  }],
   bootstrap: [AppComponent]
 })
 export class AppModule { }

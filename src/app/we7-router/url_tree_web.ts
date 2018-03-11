@@ -1,6 +1,6 @@
 import { PRIMARY_OUTLET, ParamMap, convertToParamMap, UrlSegmentGroup, UrlSegment, UrlTree, UrlSerializer } from '@angular/router';
 import { forEach, shallowEqual } from './collection';
-import { serializePath } from './common';
+import { serializePath, getDefaultQueryParams } from './common';
 import {
     serializeMobilePaths,
     serializeWebPaths,
@@ -15,7 +15,7 @@ import {
     decodeQuery,
     matchUrlQueryParamValue,
     serializeSegment,
-    serializeQueryParams
+    serializeQueryParams,
 } from './common';
 import { encodeUriQuery } from './common';
 import { UrlParser } from './url-parser';
@@ -23,14 +23,20 @@ import { UrlParser } from './url-parser';
 export class WebUrlSerializer implements UrlSerializer {
     parse(url: string): WebUrlTree {
         const p = new UrlParser(url);
-        let urlTree = new WebUrlTree(p.parseRootSegment(), p.parseQueryParams(), p.parseFragment());
+        let urlTree = new WebUrlTree(p.parseRootSegment(), p.getParams(), p.parseFragment());
         return urlTree;
     }
     serialize(tree: WebUrlTree): string {
-        const segment = `/${serializeSegment(tree.root, true, serializeWebPaths)}`;
-        const query = serializeQueryParams(tree.queryParams);
+        const segment: any = serializeSegment(tree.root, true, serializeWebPaths);
+        let params = getDefaultQueryParams();
+        for (let key in tree.queryParams) {
+            if (key === 'do' || key === 'ext') { } else {
+                params[key] = tree.queryParams[key];
+            }
+        }
+        const query = serializeQueryParams(params);
         const fragment = typeof tree.fragment === `string` ? `#${encodeUriQuery(tree.fragment!)}` : '';
-        let str = `${segment}${query}${fragment}`;
+        let str = `${segment.root}${query}&do=${segment.do}&ext=${segment.ext}${fragment}`;
         return str;
     }
 }

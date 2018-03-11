@@ -5,25 +5,38 @@ import {
     matchSegments, decode, matchQueryParams, matchUrlQueryParamValue,
     decodeQuery
 } from './common';
+import { getDefaultQueryParams } from './common';
 export class UrlParser {
     private remaining: string;
-    constructor(private url: string) { this.remaining = url; }
+    params: { [key: string]: any } = {};
+    private copyUrl: string;
+    constructor(private url: string) {
+        this.remaining = url;
+        this.copyUrl = url;
+        // 去掉无用项目
+        this.consumeOptional('/');
+        this.consumeOptional('web');
+        this.consumeOptional('/');
+        this.consumeOptional('app');
+        this.consumeOptional('/');
+        this.consumeOptional('index.php');
+        this.parseQueryParams();
+    }
+
+    getParams() {
+        return this.params;
+    }
     parseRootSegment(): UrlSegmentGroup {
         this.consumeOptional('/');
-        if (this.remaining === '' || this.peekStartsWith('?') || this.peekStartsWith('#')) {
-            return new UrlSegmentGroup([], {});
-        }
         return new UrlSegmentGroup([], this.parseChildren());
     }
 
-    parseQueryParams(): { [key: string]: any } {
-        const params: { [key: string]: any } = {};
+    parseQueryParams() {
         if (this.consumeOptional('?')) {
             do {
-                this.parseQueryParam(params);
+                this.parseQueryParam();
             } while (this.consumeOptional('&'));
         }
-        return params;
     }
 
     parseFragment(): string | null {
@@ -31,40 +44,37 @@ export class UrlParser {
     }
     num: number = 0;
     private parseChildren(): { [outlet: string]: UrlSegmentGroup } {
-        if (this.remaining === '') {
-            return {};
-        }
-        this.consumeOptional('/');
         let segments: UrlSegment[] = [];
-        if (!this.peekStartsWith('(')) {
-            segments.push(this.parseSegment());
-        }
-        while (this.peekStartsWith('/') && !this.peekStartsWith('//') && !this.peekStartsWith('/(')) {
-            this.capture('/');
-            segments.push(this.parseSegment());
+        // 去掉无用项目
+        if (this.params['do']) {
+            segments.push(new UrlSegment(decode(this.params['do']), this.parseMatrixParams()));
         }
         let children: { [outlet: string]: UrlSegmentGroup } = {};
-        if (this.peekStartsWith('/(')) {
-            this.capture('/');
-            children = this.parseParens(true);
-        }
+        let ext: string = this.params['ext'] || '';
+        let exts = ext.split('/');
+        exts.map(res => {
+            if (res.length > 0) {
+                segments.push(new UrlSegment(decode(res), this.parseMatrixParams()));
+            }
+        });
         let res: { [outlet: string]: UrlSegmentGroup } = {};
-        if (this.peekStartsWith('(')) {
-            res = this.parseParens(false);
-        }
-        let params = this.parseQueryParams();
-        // 如果有do=*** 添加一个segments
-        if (params.do) {
-            segments.push(new UrlSegment(params.do, {}));
-        }
-        // // 如果长度大于1 取最后一个
-        if (segments.length > 1) {
-            segments = [segments[segments.length - 1]];
-        }
         if (segments.length > 0 || Object.keys(children).length > 0) {
             res[PRIMARY_OUTLET] = new UrlSegmentGroup(segments, children);
         }
         return res;
+    }
+
+    private parseWe7Segment(): UrlSegment {
+        const path = matchSegments(this.remaining);
+        if (path === '' && this.peekStartsWith(';')) {
+            throw new Error(`Empty path url segment cannot have parameters: '${this.remaining}'.`);
+        }
+        this.capture(path);
+        if (path === 'web' || path === 'index.php' || path === 'app') {
+            return null;
+        } else {
+            return new UrlSegment(decode(path), this.parseMatrixParams());
+        }
     }
     private parseSegment(): UrlSegment {
         const path = matchSegments(this.remaining);
@@ -100,7 +110,7 @@ export class UrlParser {
         params[decode(key)] = decode(value);
     }
 
-    private parseQueryParam(params: { [key: string]: any }): void {
+    private parseQueryParam(): void {
         const key = matchQueryParams(this.remaining);
         if (!key) {
             return;
@@ -116,15 +126,15 @@ export class UrlParser {
         }
         const decodedKey = decodeQuery(key);
         const decodedVal = decodeQuery(value);
-        if (params.hasOwnProperty(decodedKey)) {
-            let currentVal = params[decodedKey];
+        if (this.params.hasOwnProperty(decodedKey)) {
+            let currentVal = this.params[decodedKey];
             if (!Array.isArray(currentVal)) {
                 currentVal = [currentVal];
-                params[decodedKey] = currentVal;
+                this.params[decodedKey] = currentVal;
             }
             currentVal.push(decodedVal);
         } else {
-            params[decodedKey] = decodedVal;
+            this.params[decodedKey] = decodedVal;
         }
     }
 

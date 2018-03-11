@@ -81,57 +81,40 @@ function forEach(map, callback) {
  * @return {?}
  */
 function serializeMobilePaths(segment) {
-    let /** @type {?} */ i = getQueryParams('i');
-    let /** @type {?} */ m = getQueryParams('m');
-    let /** @type {?} */ str = `app/index.php?i=${i ? i : '2'}&c=entry&m=${m ? m : 'imeepos_runner'}`;
-    if (segment.segments.length > 0) {
-        console.log(segment.segments);
-        let /** @type {?} */ p = segment.segments[segment.segments.length - 1];
-        str += '&do=' + p.path;
-    }
+    let /** @type {?} */ str = `app/index.php`;
+    str += jiexiSegmentsToUrl(segment.segments);
     return str;
+}
+/**
+ * @param {?} segments
+ * @return {?}
+ */
+function jiexiSegmentsToUrl(segments) {
+    let /** @type {?} */ str = '';
+    let /** @type {?} */ ext = serializePaths(segments);
+    str += '?ext=' + ext;
+    return str;
+}
+/**
+ * @param {?} segments
+ * @return {?}
+ */
+function serializePaths(segments) {
+    return segments.map(p => serializePath(p)).join('/');
 }
 /**
  * @param {?} segment
  * @return {?}
  */
 function serializeWebPaths(segment) {
-    let /** @type {?} */ m = getQueryParams('m');
-    let /** @type {?} */ i = getQueryParams('i');
-    let /** @type {?} */ str = `web/index.php?c=site&a=entry&i=${i ? i : '2'}&m=${m ? m : 'imeepos_runner'}`;
-    if (segment.segments.length > 0) {
-        console.log(segment.segments);
-        let /** @type {?} */ p = segment.segments[segment.segments.length - 1];
-        str += '&do=' + p.path;
-    }
+    let /** @type {?} */ str = `web/index.php`;
+    str += jiexiSegmentsToUrl(segment.segments);
     return str;
 }
 /**
- * @param {?} name
  * @return {?}
  */
-function getQueryParams(name) {
-    let /** @type {?} */ url = parseURL();
-    return url[name];
-}
-/**
- * @return {?}
- */
-function parseURL() {
-    const /** @type {?} */ ret = {};
-    const /** @type {?} */ seg = location.search.replace(/^\?/, '').split('&').filter(function (v, i) {
-        if (v !== '' && v.indexOf('=')) {
-            return true;
-        }
-    });
-    seg.forEach((element, index) => {
-        const /** @type {?} */ idx = element.indexOf('=');
-        const /** @type {?} */ key = element.substring(0, idx);
-        const /** @type {?} */ val = element.substring(idx + 1);
-        ret[key] = val;
-    });
-    return ret;
-}
+
 /**
  * @param {?} s
  * @return {?}
@@ -143,7 +126,9 @@ function encodeUriQuery(s) {
  * @param {?} s
  * @return {?}
  */
-
+function encodeUriSegment(s) {
+    return encodeUriString(s).replace(/\(/g, '%28').replace(/\)/g, '%29').replace(/%26/gi, '&');
+}
 /**
  * @param {?} s
  * @return {?}
@@ -162,7 +147,9 @@ function decodeQuery(s) {
  * @param {?} path
  * @return {?}
  */
-
+function serializePath(path) {
+    return `${encodeUriSegment(path.path)}${serializeMatrixParams(path.parameters)}`;
+}
 /**
  * @param {?} s
  * @return {?}
@@ -173,6 +160,15 @@ function encodeUriString(s) {
         .replace(/%3A/gi, ':')
         .replace(/%24/g, '$')
         .replace(/%2C/gi, ',');
+}
+/**
+ * @param {?} params
+ * @return {?}
+ */
+function serializeMatrixParams(params) {
+    return Object.keys(params)
+        .map(key => `;${encodeUriSegment(key)}=${encodeUriSegment(params[key])}`)
+        .join('');
 }
 /**
  * @param {?} as
@@ -244,6 +240,7 @@ const SEGMENT_RE = /^[^\/()?;=&#]+/;
  */
 function matchSegments(str) {
     const /** @type {?} */ match = str.match(SEGMENT_RE);
+    console.log('matchSegments', match);
     return match ? match[0] : '';
 }
 const QUERY_PARAM_RE = /^[^=?&#]+/;
@@ -326,8 +323,11 @@ class UrlParser {
      */
     constructor(url) {
         this.url = url;
+        this.params = {};
         this.num = 0;
         this.remaining = url;
+        this.copyUrl = url;
+        this.params = this.parseQueryParams(true);
     }
     /**
      * @return {?}
@@ -340,16 +340,16 @@ class UrlParser {
         return new UrlSegmentGroup([], this.parseChildren());
     }
     /**
+     * @param {?=} hasDo
      * @return {?}
      */
-    parseQueryParams() {
-        const /** @type {?} */ params = {};
+    parseQueryParams(hasDo = false) {
         if (this.consumeOptional('?')) {
             do {
-                this.parseQueryParam(params);
+                this.parseQueryParam();
             } while (this.consumeOptional('&'));
         }
-        return params;
+        return this.params;
     }
     /**
      * @return {?}
@@ -361,40 +361,36 @@ class UrlParser {
      * @return {?}
      */
     parseChildren() {
-        if (this.remaining === '') {
-            return {};
-        }
-        this.consumeOptional('/');
         let /** @type {?} */ segments = [];
-        if (!this.peekStartsWith('(')) {
-            segments.push(this.parseSegment());
+        // 去掉无用项目
+        if (this.params['do']) {
+            segments.push(new UrlSegment(decode(this.params['do']), this.parseMatrixParams()));
         }
-        while (this.peekStartsWith('/') && !this.peekStartsWith('//') && !this.peekStartsWith('/(')) {
-            this.capture('/');
-            segments.push(this.parseSegment());
-        }
+        console.log(this.params);
         let /** @type {?} */ children = {};
-        if (this.peekStartsWith('/(')) {
-            this.capture('/');
-            children = this.parseParens(true);
-        }
+        let /** @type {?} */ ext = this.params['ext'] || '';
+        let /** @type {?} */ exts = ext.split('/');
         let /** @type {?} */ res = {};
-        if (this.peekStartsWith('(')) {
-            res = this.parseParens(false);
-        }
-        let /** @type {?} */ params = this.parseQueryParams();
-        // 如果有do=*** 添加一个segments
-        if (params["do"]) {
-            segments.push(new UrlSegment(params["do"], {}));
-        }
-        // // 如果长度大于1 取最后一个
-        if (segments.length > 1) {
-            segments = [segments[segments.length - 1]];
-        }
         if (segments.length > 0 || Object.keys(children).length > 0) {
             res[PRIMARY_OUTLET] = new UrlSegmentGroup(segments, children);
         }
         return res;
+    }
+    /**
+     * @return {?}
+     */
+    parseWe7Segment() {
+        const /** @type {?} */ path = matchSegments(this.remaining);
+        if (path === '' && this.peekStartsWith(';')) {
+            throw new Error(`Empty path url segment cannot have parameters: '${this.remaining}'.`);
+        }
+        this.capture(path);
+        if (path === 'web' || path === 'index.php' || path === 'app') {
+            return null;
+        }
+        else {
+            return new UrlSegment(decode(path), this.parseMatrixParams());
+        }
     }
     /**
      * @return {?}
@@ -438,10 +434,9 @@ class UrlParser {
         params[decode(key)] = decode(value);
     }
     /**
-     * @param {?} params
      * @return {?}
      */
-    parseQueryParam(params) {
+    parseQueryParam() {
         const /** @type {?} */ key = matchQueryParams(this.remaining);
         if (!key) {
             return;
@@ -457,16 +452,16 @@ class UrlParser {
         }
         const /** @type {?} */ decodedKey = decodeQuery(key);
         const /** @type {?} */ decodedVal = decodeQuery(value);
-        if (params.hasOwnProperty(decodedKey)) {
-            let /** @type {?} */ currentVal = params[decodedKey];
+        if (this.params.hasOwnProperty(decodedKey)) {
+            let /** @type {?} */ currentVal = this.params[decodedKey];
             if (!Array.isArray(currentVal)) {
                 currentVal = [currentVal];
-                params[decodedKey] = currentVal;
+                this.params[decodedKey] = currentVal;
             }
             currentVal.push(decodedVal);
         }
         else {
-            params[decodedKey] = decodedVal;
+            this.params[decodedKey] = decodedVal;
         }
     }
     /**
@@ -537,7 +532,7 @@ class MobileUrlSerializer {
      * @return {?}
      */
     parse(url) {
-        const /** @type {?} */ p = new UrlParser(url);
+        const /** @type {?} */ p = new UrlParser('/' + url);
         let /** @type {?} */ urlTree = new MobileUrlTree(p.parseRootSegment(), p.parseQueryParams(), p.parseFragment());
         return urlTree;
     }

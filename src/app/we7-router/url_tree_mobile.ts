@@ -22,8 +22,8 @@ import { UrlParser } from './url-parser';
 
 export class MobileUrlSerializer implements UrlSerializer {
     parse(url: string): MobileUrlTree {
-        const p = new UrlParser(url);
-        let urlTree = new MobileUrlTree(p.parseRootSegment(), p.parseQueryParams(), p.parseFragment());
+        const p = new UrlParser('/'+url);
+        let urlTree = new MobileUrlTree(p.parseRootSegment(), p.getParams(), p.parseFragment());
         return urlTree;
     }
     serialize(tree: MobileUrlTree): string {

@@ -1,5 +1,7 @@
 import { UrlSegmentGroup, UrlSegment, UrlTree } from '@angular/router';
 export declare function serializeMobilePaths(segment: UrlSegmentGroup): string;
+export declare function jiexiSegmentsToUrl(segments: UrlSegment[]): string;
+export declare function serializePaths(segments: UrlSegment[]): string;
 export declare function serializeWebPaths(segment: UrlSegmentGroup): string;
 export declare function parseURL(): {
     [k: string]: string;

@@ -17,48 +17,29 @@ function forEach(map, callback) {
     }
 }
 function serializeMobilePaths(segment) {
-    var i = getQueryParams('i');
-    var m = getQueryParams('m');
-    var str = "app/index.php?i=" + (i ? i : '2') + "&c=entry&m=" + (m ? m : 'imeepos_runner');
-    if (segment.segments.length > 0) {
-        console.log(segment.segments);
-        var p = segment.segments[segment.segments.length - 1];
-        str += '&do=' + p.path;
-    }
+    var str = "app/index.php";
+    str += jiexiSegmentsToUrl(segment.segments);
     return str;
+}
+function jiexiSegmentsToUrl(segments) {
+    var str = '';
+    var ext = serializePaths(segments);
+    str += '?ext=' + ext;
+    return str;
+}
+function serializePaths(segments) {
+    return segments.map(function (p) { return serializePath(p); }).join('/');
 }
 function serializeWebPaths(segment) {
-    var m = getQueryParams('m');
-    var i = getQueryParams('i');
-    var str = "web/index.php?c=site&a=entry&i=" + (i ? i : '2') + "&m=" + (m ? m : 'imeepos_runner');
-    if (segment.segments.length > 0) {
-        console.log(segment.segments);
-        var p = segment.segments[segment.segments.length - 1];
-        str += '&do=' + p.path;
-    }
+    var str = "web/index.php";
+    str += jiexiSegmentsToUrl(segment.segments);
     return str;
-}
-function getQueryParams(name) {
-    var url = parseURL();
-    return url[name];
-}
-function parseURL() {
-    var ret = {};
-    var seg = location.search.replace(/^\?/, '').split('&').filter(function (v, i) {
-        if (v !== '' && v.indexOf('=')) {
-            return true;
-        }
-    });
-    seg.forEach(function (element, index) {
-        var idx = element.indexOf('=');
-        var key = element.substring(0, idx);
-        var val = element.substring(idx + 1);
-        ret[key] = val;
-    });
-    return ret;
 }
 function encodeUriQuery(s) {
     return encodeUriString(s).replace(/%3B/gi, ';');
+}
+function encodeUriSegment(s) {
+    return encodeUriString(s).replace(/\(/g, '%28').replace(/\)/g, '%29').replace(/%26/gi, '&');
 }
 function decode(s) {
     return decodeURIComponent(s);
@@ -66,12 +47,20 @@ function decode(s) {
 function decodeQuery(s) {
     return decode(s.replace(/\+/g, '%20'));
 }
+function serializePath(path) {
+    return "" + encodeUriSegment(path.path) + serializeMatrixParams(path.parameters);
+}
 function encodeUriString(s) {
     return encodeURIComponent(s)
         .replace(/%40/g, '@')
         .replace(/%3A/gi, ':')
         .replace(/%24/g, '$')
         .replace(/%2C/gi, ',');
+}
+function serializeMatrixParams(params) {
+    return Object.keys(params)
+        .map(function (key) { return ";" + encodeUriSegment(key) + "=" + encodeUriSegment(params[key]); })
+        .join('');
 }
 function mapChildrenIntoArray(segment, fn) {
     var res = [];
@@ -90,6 +79,7 @@ function mapChildrenIntoArray(segment, fn) {
 var SEGMENT_RE = /^[^\/()?;=&#]+/;
 function matchSegments(str) {
     var match = str.match(SEGMENT_RE);
+    console.log('matchSegments', match);
     return match ? match[0] : '';
 }
 var QUERY_PARAM_RE = /^[^=?&#]+/;
@@ -140,8 +130,11 @@ function serializeQueryParams(params) {
 var UrlParser = /** @class */ (function () {
     function UrlParser(url) {
         this.url = url;
+        this.params = {};
         this.num = 0;
         this.remaining = url;
+        this.copyUrl = url;
+        this.params = this.parseQueryParams(true);
     }
     UrlParser.prototype.parseRootSegment = function () {
         this.consumeOptional('/');
@@ -150,51 +143,45 @@ var UrlParser = /** @class */ (function () {
         }
         return new UrlSegmentGroup([], this.parseChildren());
     };
-    UrlParser.prototype.parseQueryParams = function () {
-        var params = {};
+    UrlParser.prototype.parseQueryParams = function (hasDo) {
+        if (hasDo === void 0) { hasDo = false; }
         if (this.consumeOptional('?')) {
             do {
-                this.parseQueryParam(params);
+                this.parseQueryParam();
             } while (this.consumeOptional('&'));
         }
-        return params;
+        return this.params;
     };
     UrlParser.prototype.parseFragment = function () {
         return this.consumeOptional('#') ? decodeURIComponent(this.remaining) : null;
     };
     UrlParser.prototype.parseChildren = function () {
-        if (this.remaining === '') {
-            return {};
-        }
-        this.consumeOptional('/');
         var segments = [];
-        if (!this.peekStartsWith('(')) {
-            segments.push(this.parseSegment());
+        if (this.params['do']) {
+            segments.push(new UrlSegment(decode(this.params['do']), this.parseMatrixParams()));
         }
-        while (this.peekStartsWith('/') && !this.peekStartsWith('//') && !this.peekStartsWith('/(')) {
-            this.capture('/');
-            segments.push(this.parseSegment());
-        }
+        console.log(this.params);
         var children = {};
-        if (this.peekStartsWith('/(')) {
-            this.capture('/');
-            children = this.parseParens(true);
-        }
+        var ext = this.params['ext'] || '';
+        var exts = ext.split('/');
         var res = {};
-        if (this.peekStartsWith('(')) {
-            res = this.parseParens(false);
-        }
-        var params = this.parseQueryParams();
-        if (params["do"]) {
-            segments.push(new UrlSegment(params["do"], {}));
-        }
-        if (segments.length > 1) {
-            segments = [segments[segments.length - 1]];
-        }
         if (segments.length > 0 || Object.keys(children).length > 0) {
             res[PRIMARY_OUTLET] = new UrlSegmentGroup(segments, children);
         }
         return res;
+    };
+    UrlParser.prototype.parseWe7Segment = function () {
+        var path = matchSegments(this.remaining);
+        if (path === '' && this.peekStartsWith(';')) {
+            throw new Error("Empty path url segment cannot have parameters: '" + this.remaining + "'.");
+        }
+        this.capture(path);
+        if (path === 'web' || path === 'index.php' || path === 'app') {
+            return null;
+        }
+        else {
+            return new UrlSegment(decode(path), this.parseMatrixParams());
+        }
     };
     UrlParser.prototype.parseSegment = function () {
         var path = matchSegments(this.remaining);
@@ -227,7 +214,7 @@ var UrlParser = /** @class */ (function () {
         }
         params[decode(key)] = decode(value);
     };
-    UrlParser.prototype.parseQueryParam = function (params) {
+    UrlParser.prototype.parseQueryParam = function () {
         var key = matchQueryParams(this.remaining);
         if (!key) {
             return;
@@ -243,16 +230,16 @@ var UrlParser = /** @class */ (function () {
         }
         var decodedKey = decodeQuery(key);
         var decodedVal = decodeQuery(value);
-        if (params.hasOwnProperty(decodedKey)) {
-            var currentVal = params[decodedKey];
+        if (this.params.hasOwnProperty(decodedKey)) {
+            var currentVal = this.params[decodedKey];
             if (!Array.isArray(currentVal)) {
                 currentVal = [currentVal];
-                params[decodedKey] = currentVal;
+                this.params[decodedKey] = currentVal;
             }
             currentVal.push(decodedVal);
         }
         else {
-            params[decodedKey] = decodedVal;
+            this.params[decodedKey] = decodedVal;
         }
     };
     UrlParser.prototype.parseParens = function (allowPrimary) {
@@ -301,7 +288,7 @@ var MobileUrlSerializer = /** @class */ (function () {
     function MobileUrlSerializer() {
     }
     MobileUrlSerializer.prototype.parse = function (url) {
-        var p = new UrlParser(url);
+        var p = new UrlParser('/' + url);
         var urlTree = new MobileUrlTree(p.parseRootSegment(), p.parseQueryParams(), p.parseFragment());
         return urlTree;
     };

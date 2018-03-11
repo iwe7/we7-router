@@ -1,34 +1,57 @@
 import { UrlSegmentGroup, UrlSegment, PRIMARY_OUTLET, ParamMap, convertToParamMap, DefaultUrlSerializer, UrlTree } from '@angular/router';
 import { forEach, shallowEqual } from './collection';
 
-
 export function serializeMobilePaths(segment: UrlSegmentGroup): string {
-    let i = getQueryParams('i');
-    let m = getQueryParams('m');
-    let str = `app/index.php?i=${i ? i : '2'}&c=entry&m=${m ? m : 'imeepos_runner'}`;
-    str += jiexiSegmentsToUrl(segment.segments);
+    let str = `app/index.php`;
     return str;
 }
 
-export function jiexiSegmentsToUrl(segments: UrlSegment[]) {
-    let str = '';
-    segments.map((segment, index) => {
-        str += `&do${index > 0 ? index : ''}=${segment.path}`;
+export function serializePaths(segments: UrlSegment[]): string {
+    return segments.map(p => serializePath(p)).join('/');
+}
+
+export function serializeWebPaths(segment: UrlSegmentGroup): { root: string, do: string, ext: string } {
+    const { segments } = segment;
+    let _do = '';
+    let _ext = '';
+    segments.map((res, index) => {
+        if (index === 0) {
+            _do = res.path;
+        }else{
+            _ext += res.path;
+        }
     });
-    return str;
-}
-
-export function serializeWebPaths(segment: UrlSegmentGroup): string {
-    let m = getQueryParams('m');
-    let i = getQueryParams('i');
-    let str = `web/index.php?c=site&a=entry&i=${i ? i : '2'}&m=${m ? m : 'imeepos_runner'}`;
-    str += jiexiSegmentsToUrl(segment.segments);
-    return str;
+    return {
+        root: 'web/index.php',
+        do: _do,
+        ext: _ext
+    }
 }
 
 function getQueryParams(name: string) {
     let url = parseURL();
     return url[name];
+}
+
+export function getDefaultQueryParams() {
+    let res = {};
+    let a = getQueryParams('a');
+    if (a) {
+        res['a'] = a;
+    }
+    let c = getQueryParams('c');
+    if (c) {
+        res['c'] = c;
+    }
+    let i = getQueryParams('i');
+    if (i) {
+        res['i'] = i;
+    }
+    let m = getQueryParams('m');
+    if (m) {
+        res['m'] = m;
+    }
+    return res;
 }
 
 export function parseURL(): { [k: string]: string } {
@@ -159,6 +182,7 @@ export function containsSegmentGroupHelper(
 const SEGMENT_RE = /^[^\/()?;=&#]+/;
 export function matchSegments(str: string): string {
     const match = str.match(SEGMENT_RE);
+    console.log('matchSegments', match);
     return match ? match[0] : '';
 }
 
@@ -209,8 +233,8 @@ export function serializeQueryParams(params: { [key: string]: any }): string {
             value.map(v => `${encodeUriQuery(name)}=${encodeUriQuery(v)}`).join('&') :
             `${encodeUriQuery(name)}=${encodeUriQuery(value)}`;
     });
-
-    return strParams.length ? `&${strParams.join("&")}` : '';
+    let str = strParams.length ? `?${strParams.join("&")}` : '';
+    return str;
 }
 
 
