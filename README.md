@@ -16,4 +16,4 @@ export class AppModule { }
 - app/web 一级路由
 - m 二级路由
 - do 三级路由
-- ext 大于四级路由 ***|***
+- ext 大于四级路由 somerouter|somerouter
