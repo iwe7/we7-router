@@ -1,29 +1,88 @@
 import { UrlSegmentGroup, UrlSegment, PRIMARY_OUTLET, ParamMap, convertToParamMap, DefaultUrlSerializer, UrlTree } from '@angular/router';
 import { forEach, shallowEqual } from './collection';
 
+// mobile app/c/a/m/do/v
+// web web/c/a/m/do/v
+export interface We7Params {
+    root?: string;
+    c?: string;
+    a?: string;
+    do?: string;
+    m?: string;
+    ext?: string;
+    eid?: string;
+    i?: string;
+    version_id?: string;
+    t?: string;
+    j?: string;
+}
 
-export function serializePaths(segment: UrlSegmentGroup): { root: string, do: string, ext: string, m: string } {
+export function isApp(segment: UrlSegmentGroup): boolean {
     const { segments } = segment;
-    let _do = '';
-    let _ext = '';
-    let _m = '';
-    let _root = '';
-    segments.map((res, index) => {
-        if (index === 0) {
-            _root = res.path;
-        } else if (index === 1) {
-            _m = res.path;
-        } else if (index === 2) {
-            _do = res.path;
+    if (segments.length > 0) {
+        return segments[0].path === 'app';
+    } else {
+        return false;
+    }
+}
+
+export function isWeb(segment: UrlSegmentGroup): boolean {
+    const { segments } = segment;
+    if (segments.length > 0) {
+        return segments[0].path === 'web';
+    } else {
+        return false;
+    }
+}
+
+// 如果是app 
+
+export function serializeAppPaths(segments: UrlSegment[]): We7Params {
+    let params: We7Params = {
+        root: 'app/index.php',
+        c: segments.length > 1 ? segments[1].path : 'home'
+    };
+    if (params.c === 'home') {
+        return params;
+    } else {
+        params.a = segments.length > 2 ? segments[2].path : 'site';
+        if (params.c === 'entry') {
+            params.m = segments.length > 3 ? segments[3].path : 'we7_coupon';
+            params.do = segments.length > 4 ? segments[4].path : 'list';
+            params.version_id = segments.length > 5 ? segments[5].path : '1.0.0';
         } else {
-            _ext += res.path + '|';
+            params.do = segments.length > 3 ? segments[3].path : 'list';
+            params.version_id = segments.length > 4 ? segments[4].path : '1.0.0';
         }
-    });
-    return {
-        root: _root + '/index.php',
-        do: _do,
-        ext: _ext,
-        m: _m
+        return params;
+    }
+}
+
+export function serializeWebPaths(segments: UrlSegment[]): We7Params {
+    let params: We7Params = {
+        root: 'web/index.php',
+        c: segments.length > 1 ? segments[1].path : 'home'
+    };
+    params.a = segments.length > 2 ? segments[2].path : 'welcome';
+    if (params.c === 'site') {
+        params.m = segments.length > 3 ? segments[3].path : 'we7_coupon';
+        params.do = segments.length > 4 ? segments[4].path : 'welcome';
+        params.version_id = segments.length > 5 ? segments[5].path : '1.0.0';
+    } else if (params.c === 'platform') {
+
+    } {
+        params.do = segments.length > 3 ? segments[3].path : 'welcome';
+        params.version_id = segments.length > 4 ? segments[4].path : '1.0.0';
+    }
+    return params;
+}
+
+export function serializePaths(segment: UrlSegmentGroup): We7Params {
+    const { segments } = segment;
+    if (isApp(segment)) {
+        return serializeAppPaths(segments);
+    } else {
+        return serializeWebPaths(segments);
     }
 }
 
@@ -34,22 +93,15 @@ function getQueryParams(name: string) {
 
 export function getDefaultQueryParams() {
     let res = {};
-    let a = getQueryParams('a');
-    if (a) {
-        res['a'] = a;
-    }
-    let c = getQueryParams('c');
-    if (c) {
-        res['c'] = c;
-    }
     let i = getQueryParams('i');
     if (i) {
         res['i'] = i;
     }
-    // let m = getQueryParams('m');
-    // if (m) {
-    //     res['m'] = m;
-    // }
+    let j = getQueryParams('j');
+    if (j) {
+        res['j'] = i;
+    }
+    res['poverby'] = 'imeepos';
     return res;
 }
 

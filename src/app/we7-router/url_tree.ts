@@ -28,14 +28,18 @@ export class MeepoUrlSerializer implements UrlSerializer {
     serialize(tree: WebUrlTree): string {
         const segment: any = serializeSegment(tree.root, true, serializePaths);
         let params = getDefaultQueryParams();
-        for (let key in tree.queryParams) {
-            if (key === 'do' || key === 'ext' || key === 'm') { } else {
-                params[key] = tree.queryParams[key];
+        let treeParams = tree.queryParams;
+        params = { ...params, ...treeParams, ...segment };
+        let result = {};
+        for (let key in params) {
+            if (key === 'root') { } else {
+                result[key] = params[key];
             }
         }
-        const query = serializeQueryParams(params);
+        let root = segment.root;
+        const query = serializeQueryParams(result);
         const fragment = typeof tree.fragment === `string` ? `#${encodeUriQuery(tree.fragment!)}` : '';
-        let str = `${segment.root}${query}&do=${segment.do}&m=${segment.m}&ext=${segment.ext}${fragment}`;
+        let str = `${root}${query}${fragment}`;
         return str;
     }
 }

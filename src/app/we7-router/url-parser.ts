@@ -39,15 +39,26 @@ export class UrlParser {
     private parseChildren(): { [outlet: string]: UrlSegmentGroup } {
         let segments: UrlSegment[] = [];
         // 去掉无用项目
-        if(this.consumeOptional('app')){
+        this.consumeOptional('/');
+        if (this.consumeOptional('app')) {
             segments.push(new UrlSegment(decode('app'), this.parseMatrixParams()));
         }
-        if(this.consumeOptional('web')){
+        this.consumeOptional('/');
+        if (this.consumeOptional('web')) {
             segments.push(new UrlSegment(decode('web'), this.parseMatrixParams()));
         }
         this.consumeOptional('/');
         this.consumeOptional('index.php');
+        // 解析url params
         this.parseQueryParams();
+        // 控制器
+        if (this.params['c']) {
+            segments.push(new UrlSegment(decode(this.params['c']), this.parseMatrixParams()));
+        }
+        // 操作器
+        if (this.params['a']) {
+            segments.push(new UrlSegment(decode(this.params['a']), this.parseMatrixParams()));
+        }
         if (this.params['m']) {
             segments.push(new UrlSegment(decode(this.params['m']), this.parseMatrixParams()));
         }
