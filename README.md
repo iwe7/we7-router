@@ -1,4 +1,9 @@
-# mobile端
+# 安装
+```ts
+yarn add we7-router
+```
+
+# 使用
 ```ts
 import { MeepoUrlSerializer } from 'we7-router';
 @NgModule({
