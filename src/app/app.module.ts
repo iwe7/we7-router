@@ -15,16 +15,7 @@ import { ImeeposTixianModule } from './imeepos-tixian/imeepos-tixian.module';
   imports: [
     BrowserModule,
     ImeeposTixianModule,
-    RouterModule.forRoot([{
-      path: 'web',
-      loadChildren: 'app/web/web.module#WebModule'
-    }, {
-      path: 'app',
-      loadChildren: 'app/mobile/mobile.module#MobileModule'
-    }, {
-      path: 'web/home',
-      loadChildren: 'app/web/home/home.module#HomeModule'
-    }])
+    RouterModule.forRoot([])
   ],
   providers: [{
     provide: UrlSerializer,
