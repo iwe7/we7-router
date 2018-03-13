@@ -61,16 +61,16 @@ export function serializeAppPaths(segments: UrlSegment[]): We7Params {
 export function serializeWebPaths(segments: UrlSegment[]): We7Params {
     let params: We7Params = {
         root: 'web/index.php',
-        c: segments.length > 1 ? segments[1].path : 'home'
+        c: segments.length > 1 ? segments[1].path : 'site'
     };
-    params.a = segments.length > 2 ? segments[2].path : 'welcome';
+    params.a = segments.length > 2 ? segments[2].path : 'entry';
     if (params.c === 'site') {
-        params.m = segments.length > 3 ? segments[3].path : 'we7_coupon';
-        params.do = segments.length > 4 ? segments[4].path : 'welcome';
+        params.m = segments.length > 3 ? segments[3].path : 'we7_router';
+        params.do = segments.length > 4 ? segments[4].path : 'index';
         params.version_id = segments.length > 5 ? segments[5].path : '1.0.0';
     } else if (params.c === 'platform') {
 
-    } {
+    } else {
         params.do = segments.length > 3 ? segments[3].path : 'welcome';
         params.version_id = segments.length > 4 ? segments[4].path : '1.0.0';
     }

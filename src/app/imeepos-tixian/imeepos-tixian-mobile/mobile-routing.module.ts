@@ -4,6 +4,7 @@ import { WelcomeComponent } from './welcome/welcome.component';
 import { RootComponent } from './root/root.component';
 import { IndexComponent } from './index/index.component';
 import { HomeComponent } from './home/home.component';
+
 const routes: Routes = [{
   path: '',
   component: RootComponent,

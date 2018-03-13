@@ -3222,9 +3222,9 @@ image-size@~0.5.0:
   version "0.5.5"
   resolved "https://registry.yarnpkg.com/image-size/-/image-size-0.5.5.tgz#09dfd4ab9d20e29eb1c3e80b8990378df9e3cb9c"
 
-imeepos_tixian@^1.8.5:
-  version "1.8.5"
-  resolved "https://registry.yarnpkg.com/imeepos_tixian/-/imeepos_tixian-1.8.5.tgz#f9b86f39854aa6fe5bae67f621fc319e5ce1398a"
+imeepos_tixian@^1.9.1:
+  version "1.9.1"
+  resolved "https://registry.yarnpkg.com/imeepos_tixian/-/imeepos_tixian-1.9.1.tgz#8b505841943362a94dedb433ad6e0405d0cb94c7"
   dependencies:
     tslib "^1.7.1"
 

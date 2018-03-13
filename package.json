@@ -47,7 +47,7 @@
     "@angular/router": "^5.2.0",
     "commander": "^2.15.0",
     "core-js": "^2.4.1",
-    "imeepos_tixian": "^1.8.5",
+    "imeepos_tixian": "^1.9.1",
     "ng-packagr": "^2.2.0",
     "path": "^0.12.7",
     "read-pkg-up": "^3.0.0",

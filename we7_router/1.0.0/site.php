@@ -93,12 +93,12 @@ class We7_routerModuleSite extends WeModuleSite
     {
         global $_W, $_GPC;
         $this->checkWebDo("index");
-        include $this->template('web/index');
+        include $this->template('mobile/index');
     }
     public function doWebhome()
     {
         global $_W, $_GPC;
         $this->checkWebDo("index");
-        include $this->template('web/index');
+        include $this->template('mobile/index');
     }
 }

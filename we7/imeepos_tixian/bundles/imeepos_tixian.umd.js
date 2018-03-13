@@ -4,40 +4,6 @@
 	(factory((global.imeepos_tixian = {}),global.ng.core,global.ng.router,global.ng.common));
 }(this, (function (exports,core,router,common) { 'use strict';
 
-var routes = [{
-        path: 'app/entry/site/imeepos-tixian',
-        loadChildren: './imeepos-tixian-mobile/mobile.module#MobileModule',
-    }, {
-        path: 'web/site/entry/imeepos-tixian',
-        loadChildren: './imeepos-tixian-web/web.module#WebModule',
-    }];
-var ImeeposTixianRoutingModule = /** @class */ (function () {
-    function ImeeposTixianRoutingModule() {
-    }
-    return ImeeposTixianRoutingModule;
-}());
-ImeeposTixianRoutingModule.decorators = [
-    { type: core.NgModule, args: [{
-                imports: [router.RouterModule.forChild(routes)],
-                exports: [router.RouterModule]
-            },] },
-];
-ImeeposTixianRoutingModule.ctorParameters = function () { return []; };
-var ImeeposTixianModule = /** @class */ (function () {
-    function ImeeposTixianModule() {
-    }
-    return ImeeposTixianModule;
-}());
-ImeeposTixianModule.decorators = [
-    { type: core.NgModule, args: [{
-                imports: [
-                    common.CommonModule,
-                    ImeeposTixianRoutingModule
-                ],
-                declarations: []
-            },] },
-];
-ImeeposTixianModule.ctorParameters = function () { return []; };
 var WelcomeComponent = /** @class */ (function () {
     function WelcomeComponent() {
     }
@@ -63,7 +29,7 @@ var RootComponent = /** @class */ (function () {
 RootComponent.decorators = [
     { type: core.Component, args: [{
                 selector: 'app-root',
-                template: "<router-outlet></router-outlet>",
+                template: "\n<h2 class=\"title\">imeepos test mobile</h2>\n<ul>\n    <li>\n        <a routerLink=\"/app/entry/site/we7_router/index\">index</a>\n    </li>\n    <li>\n        <a routerLink=\"/app/entry/site/we7_router/home\">home</a>\n    </li>\n</ul>\n<router-outlet></router-outlet>\n",
                 styles: [""]
             },] },
 ];
@@ -98,7 +64,7 @@ HomeComponent.decorators = [
             },] },
 ];
 HomeComponent.ctorParameters = function () { return []; };
-var routes$1 = [{
+var routes = [{
         path: '',
         component: RootComponent,
         children: [{
@@ -122,7 +88,7 @@ var MobileRoutingModule = /** @class */ (function () {
 }());
 MobileRoutingModule.decorators = [
     { type: core.NgModule, args: [{
-                imports: [router.RouterModule.forChild(routes$1)],
+                imports: [router.RouterModule.forChild(routes)],
                 exports: [router.RouterModule]
             },] },
 ];
@@ -167,7 +133,7 @@ var RootComponent$1 = /** @class */ (function () {
 RootComponent$1.decorators = [
     { type: core.Component, args: [{
                 selector: 'app-root',
-                template: "<router-outlet></router-outlet>",
+                template: "\n<h2 class=\"title\">imeepos test web</h2>\n<ul>\n    <li>\n        <a routerLink=\"/web/site/entry/we7_router/index\">index</a>\n    </li>\n    <li>\n        <a routerLink=\"/web/site/entry/we7_router/home\">home</a>\n    </li>\n</ul>\n<router-outlet></router-outlet>\n",
                 styles: [""]
             },] },
 ];
@@ -202,7 +168,7 @@ IndexComponent$1.decorators = [
             },] },
 ];
 IndexComponent$1.ctorParameters = function () { return []; };
-var routes$2 = [{
+var routes$1 = [{
         path: '',
         component: RootComponent$1,
         children: [{
@@ -226,7 +192,7 @@ var WebRoutingModule = /** @class */ (function () {
 }());
 WebRoutingModule.decorators = [
     { type: core.NgModule, args: [{
-                imports: [router.RouterModule.forChild(routes$2)],
+                imports: [router.RouterModule.forChild(routes$1)],
                 exports: [router.RouterModule]
             },] },
 ];
@@ -247,20 +213,18 @@ WebModule.decorators = [
 ];
 WebModule.ctorParameters = function () { return []; };
 
-exports.ImeeposTixianModule = ImeeposTixianModule;
 exports.MobileModule = MobileModule;
 exports.WebModule = WebModule;
-exports.ɵf = HomeComponent;
-exports.ɵe = IndexComponent;
-exports.ɵb = MobileRoutingModule;
-exports.ɵc = RootComponent;
-exports.ɵd = WelcomeComponent;
-exports.ɵa = ImeeposTixianRoutingModule;
-exports.ɵk = HomeComponent$1;
-exports.ɵj = IndexComponent$1;
-exports.ɵh = RootComponent$1;
-exports.ɵg = WebRoutingModule;
-exports.ɵi = WelcomeComponent$1;
+exports.ɵe = HomeComponent;
+exports.ɵd = IndexComponent;
+exports.ɵa = MobileRoutingModule;
+exports.ɵb = RootComponent;
+exports.ɵc = WelcomeComponent;
+exports.ɵj = HomeComponent$1;
+exports.ɵi = IndexComponent$1;
+exports.ɵg = RootComponent$1;
+exports.ɵf = WebRoutingModule;
+exports.ɵh = WelcomeComponent$1;
 
 Object.defineProperty(exports, '__esModule', { value: true });
 
