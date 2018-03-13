@@ -1,15 +1,22 @@
 import { UrlSegmentGroup, UrlSegment, UrlTree } from '@angular/router';
-export declare function serializeMobilePaths(segment: UrlSegmentGroup): {
-    root: string;
-    do: string;
-    ext: string;
-};
-export declare function serializePaths(segments: UrlSegment[]): string;
-export declare function serializeWebPaths(segment: UrlSegmentGroup): {
-    root: string;
-    do: string;
-    ext: string;
-};
+export interface We7Params {
+    root?: string;
+    c?: string;
+    a?: string;
+    do?: string;
+    m?: string;
+    ext?: string;
+    eid?: string;
+    i?: string;
+    version_id?: string;
+    t?: string;
+    j?: string;
+}
+export declare function isApp(segment: UrlSegmentGroup): boolean;
+export declare function isWeb(segment: UrlSegmentGroup): boolean;
+export declare function serializeAppPaths(segments: UrlSegment[]): We7Params;
+export declare function serializeWebPaths(segments: UrlSegment[]): We7Params;
+export declare function serializePaths(segment: UrlSegmentGroup): We7Params;
 export declare function getDefaultQueryParams(): {};
 export declare function parseURL(): {
     [k: string]: string;

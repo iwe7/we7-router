@@ -1,4 +1,4 @@
-import { NgModule } from '@angular/core';
+import '@angular/core';
 import 'rxjs/observable/fromPromise';
 import 'rxjs/observable/of';
 import 'rxjs/operator/concatAll';
@@ -6,7 +6,7 @@ import 'rxjs/operator/every';
 import 'rxjs/operator/last';
 import 'rxjs/operator/map';
 import 'rxjs/operator/mergeAll';
-import { PRIMARY_OUTLET, UrlSegmentGroup, UrlSegment, convertToParamMap, UrlTree, UrlSerializer } from '@angular/router';
+import { PRIMARY_OUTLET, UrlSegmentGroup, UrlSegment, convertToParamMap, UrlTree } from '@angular/router';
 
 /**
  * @fileoverview added by tsickle
@@ -77,53 +77,88 @@ function forEach(map, callback) {
  * @suppress {checkTypes} checked by tsc
  */
 /**
- * @param {?} segment
- * @return {?}
- */
-function serializeMobilePaths(segment) {
-    const { segments } = segment;
-    let /** @type {?} */ _do = '';
-    let /** @type {?} */ _ext = '';
-    segments.map((res, index) => {
-        if (index === 0) {
-            _do = res.path;
-        }
-        else {
-            _ext += res.path + '/';
-        }
-    });
-    return {
-        root: 'app/index.php',
-        do: _do,
-        ext: _ext
-    };
-}
-/**
- * @param {?} segments
- * @return {?}
+ * @record
  */
 
 /**
  * @param {?} segment
  * @return {?}
  */
-function serializeWebPaths(segment) {
+function isApp(segment) {
     const { segments } = segment;
-    let /** @type {?} */ _do = '';
-    let /** @type {?} */ _ext = '';
-    segments.map((res, index) => {
-        if (index === 0) {
-            _do = res.path;
+    if (segments.length > 0) {
+        return segments[0].path === 'app';
+    }
+    else {
+        return false;
+    }
+}
+/**
+ * @param {?} segment
+ * @return {?}
+ */
+
+/**
+ * @param {?} segments
+ * @return {?}
+ */
+function serializeAppPaths(segments) {
+    let /** @type {?} */ params = {
+        root: 'app/index.php',
+        c: segments.length > 1 ? segments[1].path : 'home'
+    };
+    if (params.c === 'home') {
+        return params;
+    }
+    else {
+        params.a = segments.length > 2 ? segments[2].path : 'site';
+        if (params.c === 'entry') {
+            params.m = segments.length > 3 ? segments[3].path : 'we7_coupon';
+            params.do = segments.length > 4 ? segments[4].path : 'list';
+            params.version_id = segments.length > 5 ? segments[5].path : '1.0.0';
         }
         else {
-            _ext += res.path;
+            params.do = segments.length > 3 ? segments[3].path : 'list';
+            params.version_id = segments.length > 4 ? segments[4].path : '1.0.0';
         }
-    });
-    return {
+        return params;
+    }
+}
+/**
+ * @param {?} segments
+ * @return {?}
+ */
+function serializeWebPaths(segments) {
+    let /** @type {?} */ params = {
         root: 'web/index.php',
-        do: _do,
-        ext: _ext
+        c: segments.length > 1 ? segments[1].path : 'home'
     };
+    params.a = segments.length > 2 ? segments[2].path : 'welcome';
+    if (params.c === 'site') {
+        params.m = segments.length > 3 ? segments[3].path : 'we7_coupon';
+        params.do = segments.length > 4 ? segments[4].path : 'welcome';
+        params.version_id = segments.length > 5 ? segments[5].path : '1.0.0';
+    }
+    else if (params.c === 'platform') {
+    }
+    {
+        params.do = segments.length > 3 ? segments[3].path : 'welcome';
+        params.version_id = segments.length > 4 ? segments[4].path : '1.0.0';
+    }
+    return params;
+}
+/**
+ * @param {?} segment
+ * @return {?}
+ */
+function serializePaths(segment) {
+    const { segments } = segment;
+    if (isApp(segment)) {
+        return serializeAppPaths(segments);
+    }
+    else {
+        return serializeWebPaths(segments);
+    }
 }
 /**
  * @param {?} name
@@ -138,22 +173,15 @@ function getQueryParams(name) {
  */
 function getDefaultQueryParams() {
     let /** @type {?} */ res = {};
-    let /** @type {?} */ a = getQueryParams('a');
-    if (a) {
-        res['a'] = a;
-    }
-    let /** @type {?} */ c = getQueryParams('c');
-    if (c) {
-        res['c'] = c;
-    }
     let /** @type {?} */ i = getQueryParams('i');
     if (i) {
         res['i'] = i;
     }
-    let /** @type {?} */ m = getQueryParams('m');
-    if (m) {
-        res['m'] = m;
+    let /** @type {?} */ j = getQueryParams('j');
+    if (j) {
+        res['j'] = i;
     }
+    res['poverby'] = 'imeepos';
     return res;
 }
 /**
@@ -375,13 +403,6 @@ class UrlParser {
         this.remaining = url;
         this.copyUrl = url;
         // 去掉无用项目
-        this.consumeOptional('/');
-        this.consumeOptional('web');
-        this.consumeOptional('/');
-        this.consumeOptional('app');
-        this.consumeOptional('/');
-        this.consumeOptional('index.php');
-        this.parseQueryParams();
     }
     /**
      * @return {?}
@@ -418,12 +439,35 @@ class UrlParser {
     parseChildren() {
         let /** @type {?} */ segments = [];
         // 去掉无用项目
+        this.consumeOptional('/');
+        if (this.consumeOptional('app')) {
+            segments.push(new UrlSegment(decode('app'), this.parseMatrixParams()));
+        }
+        this.consumeOptional('/');
+        if (this.consumeOptional('web')) {
+            segments.push(new UrlSegment(decode('web'), this.parseMatrixParams()));
+        }
+        this.consumeOptional('/');
+        this.consumeOptional('index.php');
+        // 解析url params
+        this.parseQueryParams();
+        // 控制器
+        if (this.params['c']) {
+            segments.push(new UrlSegment(decode(this.params['c']), this.parseMatrixParams()));
+        }
+        // 操作器
+        if (this.params['a']) {
+            segments.push(new UrlSegment(decode(this.params['a']), this.parseMatrixParams()));
+        }
+        if (this.params['m']) {
+            segments.push(new UrlSegment(decode(this.params['m']), this.parseMatrixParams()));
+        }
         if (this.params['do']) {
             segments.push(new UrlSegment(decode(this.params['do']), this.parseMatrixParams()));
         }
         let /** @type {?} */ children = {};
         let /** @type {?} */ ext = this.params['ext'] || '';
-        let /** @type {?} */ exts = ext.split('/');
+        let /** @type {?} */ exts = ext.split('|');
         exts.map(res => {
             if (res.length > 0) {
                 segments.push(new UrlSegment(decode(res), this.parseMatrixParams()));
@@ -433,6 +477,7 @@ class UrlParser {
         if (segments.length > 0 || Object.keys(children).length > 0) {
             res[PRIMARY_OUTLET] = new UrlSegmentGroup(segments, children);
         }
+        console.log(res);
         return res;
     }
     /**
@@ -585,7 +630,7 @@ class UrlParser {
  * @fileoverview added by tsickle
  * @suppress {checkTypes} checked by tsc
  */
-class MobileUrlSerializer {
+class MeepoUrlSerializer {
     /**
      * @param {?} url
      * @return {?}
@@ -600,21 +645,25 @@ class MobileUrlSerializer {
      * @return {?}
      */
     serialize(tree) {
-        const /** @type {?} */ segment = serializeSegment(tree.root, true, serializeMobilePaths);
+        const /** @type {?} */ segment = serializeSegment(tree.root, true, serializePaths);
         let /** @type {?} */ params = getDefaultQueryParams();
-        for (let /** @type {?} */ key in tree.queryParams) {
-            if (key === 'do' || key === 'ext') { }
+        let /** @type {?} */ treeParams = tree.queryParams;
+        params = Object.assign({}, params, treeParams, segment);
+        let /** @type {?} */ result = {};
+        for (let /** @type {?} */ key in params) {
+            if (key === 'root') { }
             else {
-                params[key] = tree.queryParams[key];
+                result[key] = params[key];
             }
         }
-        const /** @type {?} */ query = serializeQueryParams(params);
+        let /** @type {?} */ root = segment.root;
+        const /** @type {?} */ query = serializeQueryParams(result);
         const /** @type {?} */ fragment = typeof tree.fragment === `string` ? `#${encodeUriQuery((/** @type {?} */ ((tree.fragment))))}` : '';
-        let /** @type {?} */ str = `${segment.root}${query}&do=${segment.do}&ext=${segment.ext}${fragment}`;
+        let /** @type {?} */ str = `${root}${query}${fragment}`;
         return str;
     }
 }
-const WEB_SERIALIZER = new MobileUrlSerializer();
+const WEB_SERIALIZER = new MeepoUrlSerializer();
 class WebUrlTree extends UrlTree {
     /**
      * @param {?} root
@@ -646,114 +695,6 @@ class WebUrlTree extends UrlTree {
  * @fileoverview added by tsickle
  * @suppress {checkTypes} checked by tsc
  */
-class WebUrlSerializer {
-    /**
-     * @param {?} url
-     * @return {?}
-     */
-    parse(url) {
-        const /** @type {?} */ p = new UrlParser(url);
-        let /** @type {?} */ urlTree = new WebUrlTree$1(p.parseRootSegment(), p.getParams(), p.parseFragment());
-        return urlTree;
-    }
-    /**
-     * @param {?} tree
-     * @return {?}
-     */
-    serialize(tree) {
-        const /** @type {?} */ segment = serializeSegment(tree.root, true, serializeWebPaths);
-        let /** @type {?} */ params = getDefaultQueryParams();
-        for (let /** @type {?} */ key in tree.queryParams) {
-            if (key === 'do' || key === 'ext') { }
-            else {
-                params[key] = tree.queryParams[key];
-            }
-        }
-        const /** @type {?} */ query = serializeQueryParams(params);
-        const /** @type {?} */ fragment = typeof tree.fragment === `string` ? `#${encodeUriQuery((/** @type {?} */ ((tree.fragment))))}` : '';
-        let /** @type {?} */ str = `${segment.root}${query}&do=${segment.do}&ext=${segment.ext}${fragment}`;
-        return str;
-    }
-}
-const WEB_SERIALIZER$1 = new WebUrlSerializer();
-class WebUrlTree$1 extends UrlTree {
-    /**
-     * @param {?} root
-     * @param {?} queryParams
-     * @param {?} fragment
-     */
-    constructor(root, queryParams, fragment) {
-        super();
-        this.root = root;
-        this.queryParams = queryParams;
-        this.fragment = fragment;
-    }
-    /**
-     * @return {?}
-     */
-    get queryParamMap() {
-        if (!this._queryParamMap) {
-            this._queryParamMap = convertToParamMap(this.queryParams);
-        }
-        return this._queryParamMap;
-    }
-    /**
-     * @return {?}
-     */
-    toString() { return WEB_SERIALIZER$1.serialize(this); }
-}
-
-/**
- * @fileoverview added by tsickle
- * @suppress {checkTypes} checked by tsc
- */
-class We7MobileRouterModule {
-    /**
-     * @return {?}
-     */
-    static forRoot() {
-        return {
-            ngModule: We7MobileRouterModule,
-            providers: [
-                {
-                    provide: UrlSerializer,
-                    useClass: MobileUrlSerializer
-                }
-            ]
-        };
-    }
-}
-We7MobileRouterModule.decorators = [
-    { type: NgModule, args: [{},] },
-];
-/** @nocollapse */
-We7MobileRouterModule.ctorParameters = () => [];
-class We7WebRouterModule {
-    /**
-     * @return {?}
-     */
-    static forRoot() {
-        return {
-            ngModule: We7WebRouterModule,
-            providers: [
-                {
-                    provide: UrlSerializer,
-                    useClass: WebUrlSerializer
-                }
-            ]
-        };
-    }
-}
-We7WebRouterModule.decorators = [
-    { type: NgModule, args: [{},] },
-];
-/** @nocollapse */
-We7WebRouterModule.ctorParameters = () => [];
-
-/**
- * @fileoverview added by tsickle
- * @suppress {checkTypes} checked by tsc
- */
 
 /**
  * @fileoverview added by tsickle
@@ -763,5 +704,5 @@ We7WebRouterModule.ctorParameters = () => [];
  * Generated bundle index. Do not edit.
  */
 
-export { MobileUrlSerializer, WebUrlSerializer, We7MobileRouterModule, We7WebRouterModule };
+export { MeepoUrlSerializer };
 //# sourceMappingURL=we7-router.js.map

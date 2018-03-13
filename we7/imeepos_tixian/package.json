@@ -1,0 +1,24 @@
+{
+  "name": "imeepos_tixian",
+  "version": "1.8.5",
+  "repository": "https://github.com/meepobrother/imeepos_tixian.git",
+  "author": "imeepos <1037483576@qq.com>",
+  "license": "MIT",
+  "private": false,
+  "scripts": {
+    "git": "git add . && git commit -m 'push to save' && git push origin master"
+  },
+  "peerDependencies": {
+    "@angular/core": "*",
+    "@angular/common": "*",
+    "rxjs": "*"
+  },
+  "main": "bundles/imeepos_tixian.umd.js",
+  "module": "esm5/imeepos_tixian.js",
+  "es2015": "esm2015/imeepos_tixian.js",
+  "typings": "imeepos_tixian.d.ts",
+  "metadata": "imeepos_tixian.metadata.json",
+  "dependencies": {
+    "tslib": "^1.7.1"
+  }
+}

@@ -1,5 +1,5 @@
 import { ParamMap, UrlSegmentGroup, UrlTree, UrlSerializer } from '@angular/router';
-export declare class MobileUrlSerializer implements UrlSerializer {
+export declare class MeepoUrlSerializer implements UrlSerializer {
     parse(url: string): WebUrlTree;
     serialize(tree: WebUrlTree): string;
 }
