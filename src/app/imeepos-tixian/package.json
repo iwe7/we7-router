@@ -1,0 +1,24 @@
+{
+    "name": "imeepos_tixian",
+    "version": "1.8.4",
+    "repository": "https://github.com/meepobrother/imeepos_tixian.git",
+    "author": "imeepos <1037483576@qq.com>",
+    "license": "MIT",
+    "private": false,
+    "scripts": {
+        "git": "git add . && git commit -m 'push to save' && git push origin master"
+    },
+    "peerDependencies": {
+        "@angular/core": "*",
+        "@angular/common": "*",
+        "rxjs": "*"
+    },
+    "ngPackage": {
+        "$schema": "./node_modules/ng-packagr/ng-package.schema.json",
+        "dest": "../../../we7/router",
+        "workingDirectory": "./.ng_build",
+        "lib": {
+            "entryFile": "./public_api.ts"
+        }
+    }
+}
