@@ -58,6 +58,8 @@ export class UrlParser {
         // 操作器
         if (this.params['a']) {
             segments.push(new UrlSegment(decode(this.params['a']), this.parseMatrixParams()));
+        } else {
+            segments.push(new UrlSegment(decode('site'), this.parseMatrixParams()));
         }
         if (this.params['m']) {
             segments.push(new UrlSegment(decode(this.params['m']), this.parseMatrixParams()));

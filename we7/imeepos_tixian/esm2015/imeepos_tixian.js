@@ -1,6 +1,52 @@
-import { Component, NgModule } from '@angular/core';
+import { NgModule, Component } from '@angular/core';
 import { RouterModule } from '@angular/router';
 import { CommonModule } from '@angular/common';
+
+/**
+ * @fileoverview added by tsickle
+ * @suppress {checkTypes} checked by tsc
+ */
+// export function loadMobileChildren(): Type<any> | NgModuleFactory<any> | Promise<Type<any>> | Observable<Type<any>> {
+//   return of(MobileModule);
+// }
+// export function loadWebChildren(): Type<any> | NgModuleFactory<any> | Promise<Type<any>> | Observable<Type<any>> {
+//   return of(WebModule);
+// }
+const routes = [{
+        path: 'app/entry/site/imeepos-tixian',
+        loadChildren: './imeepos-tixian-mobile/mobile.module#MobileModule',
+    }, {
+        path: 'web/site/entry/imeepos-tixian',
+        loadChildren: './imeepos-tixian-web/web.module#WebModule',
+    }];
+class ImeeposTixianRoutingModule {
+}
+ImeeposTixianRoutingModule.decorators = [
+    { type: NgModule, args: [{
+                imports: [RouterModule.forChild(routes)],
+                exports: [RouterModule]
+            },] },
+];
+/** @nocollapse */
+ImeeposTixianRoutingModule.ctorParameters = () => [];
+
+/**
+ * @fileoverview added by tsickle
+ * @suppress {checkTypes} checked by tsc
+ */
+class ImeeposTixianModule {
+}
+ImeeposTixianModule.decorators = [
+    { type: NgModule, args: [{
+                imports: [
+                    CommonModule,
+                    ImeeposTixianRoutingModule
+                ],
+                declarations: []
+            },] },
+];
+/** @nocollapse */
+ImeeposTixianModule.ctorParameters = () => [];
 
 /**
  * @fileoverview added by tsickle
@@ -103,7 +149,7 @@ HomeComponent.ctorParameters = () => [];
  * @fileoverview added by tsickle
  * @suppress {checkTypes} checked by tsc
  */
-const routes = [{
+const routes$1 = [{
         path: '',
         component: RootComponent,
         children: [{
@@ -124,7 +170,7 @@ class MobileRoutingModule {
 }
 MobileRoutingModule.decorators = [
     { type: NgModule, args: [{
-                imports: [RouterModule.forChild(routes)],
+                imports: [RouterModule.forChild(routes$1)],
                 exports: [RouterModule]
             },] },
 ];
@@ -250,7 +296,7 @@ IndexComponent$1.ctorParameters = () => [];
  * @fileoverview added by tsickle
  * @suppress {checkTypes} checked by tsc
  */
-const routes$1 = [{
+const routes$2 = [{
         path: '',
         component: RootComponent$1,
         children: [{
@@ -271,7 +317,7 @@ class WebRoutingModule {
 }
 WebRoutingModule.decorators = [
     { type: NgModule, args: [{
-                imports: [RouterModule.forChild(routes$1)],
+                imports: [RouterModule.forChild(routes$2)],
                 exports: [RouterModule]
             },] },
 ];
@@ -300,58 +346,6 @@ WebModule.ctorParameters = () => [];
  * @fileoverview added by tsickle
  * @suppress {checkTypes} checked by tsc
  */
-/**
- * @return {?}
- */
-function loadMobileChildren() {
-    return MobileModule;
-}
-/**
- * @return {?}
- */
-function loadWebChildren() {
-    return WebModule;
-}
-const routes$2 = [{
-        path: 'app/entry/site/imeepos-tixian',
-        loadChildren: loadMobileChildren
-    }, {
-        path: 'web/site/entry/imeepos-tixian',
-        loadChildren: loadWebChildren
-    }];
-class ImeeposTixianRoutingModule {
-}
-ImeeposTixianRoutingModule.decorators = [
-    { type: NgModule, args: [{
-                imports: [RouterModule.forChild(routes$2)],
-                exports: [RouterModule]
-            },] },
-];
-/** @nocollapse */
-ImeeposTixianRoutingModule.ctorParameters = () => [];
-
-/**
- * @fileoverview added by tsickle
- * @suppress {checkTypes} checked by tsc
- */
-class ImeeposTixianModule {
-}
-ImeeposTixianModule.decorators = [
-    { type: NgModule, args: [{
-                imports: [
-                    CommonModule,
-                    ImeeposTixianRoutingModule
-                ],
-                declarations: []
-            },] },
-];
-/** @nocollapse */
-ImeeposTixianModule.ctorParameters = () => [];
-
-/**
- * @fileoverview added by tsickle
- * @suppress {checkTypes} checked by tsc
- */
 
 /**
  * @fileoverview added by tsickle
@@ -361,5 +355,5 @@ ImeeposTixianModule.ctorParameters = () => [];
  * Generated bundle index. Do not edit.
  */
 
-export { ImeeposTixianModule, MobileModule, WebModule, ImeeposTixianRoutingModule as ɵc, loadMobileChildren as ɵa, loadWebChildren as ɵb, HomeComponent as ɵh, IndexComponent as ɵg, MobileRoutingModule as ɵd, RootComponent as ɵe, WelcomeComponent as ɵf, HomeComponent$1 as ɵm, IndexComponent$1 as ɵl, RootComponent$1 as ɵj, WebRoutingModule as ɵi, WelcomeComponent$1 as ɵk };
+export { ImeeposTixianModule, MobileModule, WebModule, HomeComponent as ɵf, IndexComponent as ɵe, MobileRoutingModule as ɵb, RootComponent as ɵc, WelcomeComponent as ɵd, ImeeposTixianRoutingModule as ɵa, HomeComponent$1 as ɵk, IndexComponent$1 as ɵj, RootComponent$1 as ɵh, WebRoutingModule as ɵg, WelcomeComponent$1 as ɵi };
 //# sourceMappingURL=imeepos_tixian.js.map

@@ -12,12 +12,18 @@ export function loadWebChildren(): Type<any> | NgModuleFactory<any> | Promise<Ty
 }
 
 const routes: Routes = [{
-  path: 'app/entry/site/imeepos-tixian',
-  loadChildren: loadMobileChildren
+  path: 'app/entry/site/we7_router',
+  loadChildren: 'app/imeepos-runner/tixian#MobileModule'
+}, {
+  path: 'web/site/entry/we7_router',
+  loadChildren: 'app/imeepos-runner/tixian#WebModule'
 }, {
   path: 'web/site/entry/imeepos-tixian',
-  loadChildren: loadWebChildren
-}];
+  loadChildren: 'app/imeepos-runner/tixian#WebModule'
+}, {
+  path: 'app/entry/site/imeepos-tixian',
+  loadChildren: 'app/imeepos-runner/tixian#MobileModule'
+},];
 
 @NgModule({
   imports: [RouterModule.forChild(routes)],
