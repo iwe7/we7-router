@@ -53,7 +53,7 @@ function serializeAppPaths(segments) {
     else {
         params.a = segments.length > 2 ? segments[2].path : 'site';
         if (params.c === 'entry') {
-            params.m = segments.length > 3 ? segments[3].path : 'we7_coupon';
+            params.m = segments.length > 3 ? segments[3].path : getQueryParams('m');
             params.do = segments.length > 4 ? segments[4].path : 'list';
             params.version_id = segments.length > 5 ? segments[5].path : '1.0.0';
         }
@@ -71,7 +71,7 @@ function serializeWebPaths(segments) {
     };
     params.a = segments.length > 2 ? segments[2].path : 'entry';
     if (params.c === 'site') {
-        params.m = segments.length > 3 ? segments[3].path : 'we7_router';
+        params.m = segments.length > 3 ? segments[3].path : getQueryParams('m');
         params.do = segments.length > 4 ? segments[4].path : 'index';
         params.version_id = segments.length > 5 ? segments[5].path : '1.0.0';
     }
