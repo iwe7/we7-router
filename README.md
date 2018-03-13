@@ -1,24 +1,11 @@
 # mobile端
 ```ts
-import { MobileUrlSerializer } from 'we7-router';
+import { MeepoUrlSerializer } from 'we7-router';
 @NgModule({
   ...
   providers: [{
     provide: UrlSerializer,
-    useClass: MobileUrlSerializer
-  }],
-  bootstrap: [AppComponent]
-})
-export class AppModule { }
-```
-# web端
-```ts
-import { WebUrlSerializer } from 'we7-router';
-@NgModule({
-  ...
-  providers: [{
-    provide: UrlSerializer,
-    useClass: WebUrlSerializer
+    useClass: MeepoUrlSerializer
   }],
   bootstrap: [AppComponent]
 })
@@ -26,5 +13,7 @@ export class AppModule { }
 ```
 
 # 参数
-- do 一级路由
-- ext 二级路由
+- app/web 一级路由
+- m 二级路由
+- do 三级路由
+- ext 大于四级路由 ***|***

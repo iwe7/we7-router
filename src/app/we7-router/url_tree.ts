@@ -2,8 +2,7 @@ import { PRIMARY_OUTLET, ParamMap, convertToParamMap, UrlSegmentGroup, UrlSegmen
 import { forEach, shallowEqual } from './collection';
 import { serializePath, getDefaultQueryParams } from './common';
 import {
-    serializeMobilePaths,
-    serializeWebPaths,
+    serializePaths,
     mapChildrenIntoArray,
     equalQueryParams,
     equalSegmentGroups,
@@ -20,28 +19,28 @@ import {
 import { encodeUriQuery } from './common';
 import { UrlParser } from './url-parser';
 
-export class WebUrlSerializer implements UrlSerializer {
+export class MeepoUrlSerializer implements UrlSerializer {
     parse(url: string): WebUrlTree {
         const p = new UrlParser(url);
         let urlTree = new WebUrlTree(p.parseRootSegment(), p.getParams(), p.parseFragment());
         return urlTree;
     }
     serialize(tree: WebUrlTree): string {
-        const segment: any = serializeSegment(tree.root, true, serializeWebPaths);
+        const segment: any = serializeSegment(tree.root, true, serializePaths);
         let params = getDefaultQueryParams();
         for (let key in tree.queryParams) {
-            if (key === 'do' || key === 'ext') { } else {
+            if (key === 'do' || key === 'ext' || key === 'm') { } else {
                 params[key] = tree.queryParams[key];
             }
         }
         const query = serializeQueryParams(params);
         const fragment = typeof tree.fragment === `string` ? `#${encodeUriQuery(tree.fragment!)}` : '';
-        let str = `${segment.root}${query}&do=${segment.do}&ext=${segment.ext}${fragment}`;
+        let str = `${segment.root}${query}&do=${segment.do}&m=${segment.m}&ext=${segment.ext}${fragment}`;
         return str;
     }
 }
 
-const WEB_SERIALIZER = new WebUrlSerializer();
+const WEB_SERIALIZER = new MeepoUrlSerializer();
 
 export class WebUrlTree extends UrlTree {
     _queryParamMap: ParamMap;

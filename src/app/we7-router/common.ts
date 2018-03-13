@@ -1,43 +1,29 @@
 import { UrlSegmentGroup, UrlSegment, PRIMARY_OUTLET, ParamMap, convertToParamMap, DefaultUrlSerializer, UrlTree } from '@angular/router';
 import { forEach, shallowEqual } from './collection';
 
-export function serializeMobilePaths(segment: UrlSegmentGroup): { root: string, do: string, ext: string } {
+
+export function serializePaths(segment: UrlSegmentGroup): { root: string, do: string, ext: string, m: string } {
     const { segments } = segment;
     let _do = '';
     let _ext = '';
+    let _m = '';
+    let _root = '';
     segments.map((res, index) => {
         if (index === 0) {
+            _root = res.path;
+        } else if (index === 1) {
+            _m = res.path;
+        } else if (index === 2) {
             _do = res.path;
         } else {
-            _ext += res.path + '/';
+            _ext += res.path + '|';
         }
     });
     return {
-        root: 'app/index.php',
+        root: _root + '/index.php',
         do: _do,
-        ext: _ext
-    }
-}
-
-export function serializePaths(segments: UrlSegment[]): string {
-    return segments.map(p => serializePath(p)).join('/');
-}
-
-export function serializeWebPaths(segment: UrlSegmentGroup): { root: string, do: string, ext: string } {
-    const { segments } = segment;
-    let _do = '';
-    let _ext = '';
-    segments.map((res, index) => {
-        if (index === 0) {
-            _do = res.path;
-        } else {
-            _ext += res.path;
-        }
-    });
-    return {
-        root: 'web/index.php',
-        do: _do,
-        ext: _ext
+        ext: _ext,
+        m: _m
     }
 }
 
@@ -60,10 +46,10 @@ export function getDefaultQueryParams() {
     if (i) {
         res['i'] = i;
     }
-    let m = getQueryParams('m');
-    if (m) {
-        res['m'] = m;
-    }
+    // let m = getQueryParams('m');
+    // if (m) {
+    //     res['m'] = m;
+    // }
     return res;
 }
 

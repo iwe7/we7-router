@@ -14,13 +14,6 @@ export class UrlParser {
         this.remaining = url;
         this.copyUrl = url;
         // 去掉无用项目
-        this.consumeOptional('/');
-        this.consumeOptional('web');
-        this.consumeOptional('/');
-        this.consumeOptional('app');
-        this.consumeOptional('/');
-        this.consumeOptional('index.php');
-        this.parseQueryParams();
     }
 
     getParams() {
@@ -46,12 +39,24 @@ export class UrlParser {
     private parseChildren(): { [outlet: string]: UrlSegmentGroup } {
         let segments: UrlSegment[] = [];
         // 去掉无用项目
+        if(this.consumeOptional('app')){
+            segments.push(new UrlSegment(decode('app'), this.parseMatrixParams()));
+        }
+        if(this.consumeOptional('web')){
+            segments.push(new UrlSegment(decode('web'), this.parseMatrixParams()));
+        }
+        this.consumeOptional('/');
+        this.consumeOptional('index.php');
+        this.parseQueryParams();
+        if (this.params['m']) {
+            segments.push(new UrlSegment(decode(this.params['m']), this.parseMatrixParams()));
+        }
         if (this.params['do']) {
             segments.push(new UrlSegment(decode(this.params['do']), this.parseMatrixParams()));
         }
         let children: { [outlet: string]: UrlSegmentGroup } = {};
         let ext: string = this.params['ext'] || '';
-        let exts = ext.split('/');
+        let exts = ext.split('|');
         exts.map(res => {
             if (res.length > 0) {
                 segments.push(new UrlSegment(decode(res), this.parseMatrixParams()));
@@ -61,6 +66,7 @@ export class UrlParser {
         if (segments.length > 0 || Object.keys(children).length > 0) {
             res[PRIMARY_OUTLET] = new UrlSegmentGroup(segments, children);
         }
+        console.log(res);
         return res;
     }
 

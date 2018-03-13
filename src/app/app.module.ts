@@ -4,7 +4,7 @@ import { NgModule } from '@angular/core';
 
 import { AppComponent, AppSetting, AppDetail, AppHome, ChildrenPage } from './app.component';
 import { RouterModule, UrlSerializer } from '@angular/router';
-import { WebUrlSerializer, MobileUrlSerializer } from './we7-router/public_api';
+import { MeepoUrlSerializer } from './we7-router/public_api';
 @NgModule({
   declarations: [
     AppComponent,
@@ -16,28 +16,22 @@ import { WebUrlSerializer, MobileUrlSerializer } from './we7-router/public_api';
   imports: [
     BrowserModule,
     RouterModule.forRoot([{
-      path: 'setting',
-      component: AppSetting
-    }, {
-      path: 'home',
-      component: AppHome
-    }, {
-      path: 'detail',
-      component: AppDetail
-    }, {
-      path: 'children',
+      path: 'web',
       children: [{
-        path: '',
-        component: AppSetting
-      }, {
-        path: 'home',
-        component: AppHome
+        path: 'imeepos_test',
+        loadChildren: 'app/imeepos_test/web/web-router#WebRouterModule'
+      }]
+    }, {
+      path: 'app',
+      children: [{
+        path: 'imeepos_test',
+        loadChildren: 'app/imeepos_test/mobile/mobile-router#MobileRouterModule'
       }]
     }])
   ],
   providers: [{
     provide: UrlSerializer,
-    useClass: MobileUrlSerializer
+    useClass: MeepoUrlSerializer
   }],
   bootstrap: [AppComponent]
 })

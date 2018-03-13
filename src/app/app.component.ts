@@ -33,11 +33,7 @@ export class AppDetail {
   title = 'app';
   constructor(
     public route: ActivatedRoute
-  ) {
-    this.route.queryParams.subscribe(res => {
-      console.log(res);
-    });
-  }
+  ) { }
 }
 
 @Component({
