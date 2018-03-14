@@ -11,6 +11,7 @@ export interface We7Params {
     version_id?: string;
     t?: string;
     j?: string;
+    type?: string;
 }
 export declare function isApp(segment: UrlSegmentGroup): boolean;
 export declare function isWeb(segment: UrlSegmentGroup): boolean;

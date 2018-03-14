@@ -61,6 +61,7 @@ function serializeAppPaths(segments) {
             params.do = segments.length > 3 ? segments[3].path : 'list';
             params.version_id = segments.length > 4 ? segments[4].path : '1.0.0';
         }
+        params.type = 'app';
         return params;
     }
 }
@@ -81,6 +82,7 @@ function serializeWebPaths(segments) {
         params.do = segments.length > 3 ? segments[3].path : 'welcome';
         params.version_id = segments.length > 4 ? segments[4].path : '1.0.0';
     }
+    params.type = 'web';
     return params;
 }
 function serializePaths(segment) {

@@ -15,6 +15,7 @@ export interface We7Params {
     version_id?: string;
     t?: string;
     j?: string;
+    type?: string;
 }
 
 export function isApp(segment: UrlSegmentGroup): boolean {
@@ -54,6 +55,7 @@ export function serializeAppPaths(segments: UrlSegment[]): We7Params {
             params.do = segments.length > 3 ? segments[3].path : 'list';
             params.version_id = segments.length > 4 ? segments[4].path : '1.0.0';
         }
+        params.type = 'app';
         return params;
     }
 }
@@ -74,6 +76,7 @@ export function serializeWebPaths(segments: UrlSegment[]): We7Params {
         params.do = segments.length > 3 ? segments[3].path : 'welcome';
         params.version_id = segments.length > 4 ? segments[4].path : '1.0.0';
     }
+    params.type = 'web';
     return params;
 }
 
