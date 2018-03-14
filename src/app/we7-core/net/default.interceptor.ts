@@ -10,7 +10,6 @@ import { ErrorObservable } from 'rxjs/observable/ErrorObservable';
 import { mergeMap, catchError } from 'rxjs/operators';
 import { NzMessageService } from 'ng-zorro-antd';
 import { _HttpClient } from '@delon/theme';
-import { environment } from '@env/environment';
 
 /**
  * 默认HTTP拦截器，其注册细节见 `app.module.ts`
@@ -55,9 +54,6 @@ export class DefaultInterceptor implements HttpInterceptor {
     intercept(req: HttpRequest<any>, next: HttpHandler):
         Observable<HttpSentEvent | HttpHeaderResponse | HttpProgressEvent | HttpResponse<any> | HttpUserEvent<any>> {
         let url = req.url;
-        // if (!url.startsWith('https://') && !url.startsWith('http://')) {
-        //     url = environment.SERVER_URL + url;
-        // }
         const newReq = req.clone({
             url: url
         });
