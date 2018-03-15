@@ -23,7 +23,11 @@ export function isApp(segment: UrlSegmentGroup): boolean {
     if (segments.length > 0) {
         return segments[0].path === 'app';
     } else {
-        return false;
+        if (detectmob()) {
+            return true;
+        } else {
+            return false;
+        }
     }
 }
 
@@ -32,6 +36,26 @@ export function isWeb(segment: UrlSegmentGroup): boolean {
     if (segments.length > 0) {
         return segments[0].path === 'web';
     } else {
+        if (detectmob()) {
+            return false;
+        } else {
+            return true;
+        }
+    }
+}
+
+export function detectmob() {
+    if (navigator.userAgent.match(/Android/i)
+        || navigator.userAgent.match(/webOS/i)
+        || navigator.userAgent.match(/iPhone/i)
+        || navigator.userAgent.match(/iPad/i)
+        || navigator.userAgent.match(/iPod/i)
+        || navigator.userAgent.match(/BlackBerry/i)
+        || navigator.userAgent.match(/Windows Phone/i)
+    ) {
+        return true;
+    }
+    else {
         return false;
     }
 }
@@ -41,7 +65,7 @@ export function isWeb(segment: UrlSegmentGroup): boolean {
 export function serializeAppPaths(segments: UrlSegment[]): We7Params {
     let params: We7Params = {
         root: 'app/index.php',
-        c: segments.length > 1 ? segments[1].path : 'home'
+        c: segments.length > 1 ? segments[1].path : 'entry'
     };
     if (params.c === 'home') {
         return params;
@@ -49,10 +73,10 @@ export function serializeAppPaths(segments: UrlSegment[]): We7Params {
         params.a = segments.length > 2 ? segments[2].path : 'site';
         if (params.c === 'entry') {
             params.m = segments.length > 3 ? segments[3].path : getQueryParams('m');
-            params.do = segments.length > 4 ? segments[4].path : 'list';
+            params.do = segments.length > 4 ? segments[4].path : 'index';
             params.version_id = segments.length > 5 ? segments[5].path : '1.0.0';
         } else {
-            params.do = segments.length > 3 ? segments[3].path : 'list';
+            params.do = segments.length > 3 ? segments[3].path : 'index';
             params.version_id = segments.length > 4 ? segments[4].path : '1.0.0';
         }
         params.type = 'app';
