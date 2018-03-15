@@ -90,7 +90,12 @@ function isApp(segment) {
         return segments[0].path === 'app';
     }
     else {
-        return false;
+        if (detectmob()) {
+            return true;
+        }
+        else {
+            return false;
+        }
     }
 }
 /**
@@ -99,13 +104,30 @@ function isApp(segment) {
  */
 
 /**
+ * @return {?}
+ */
+function detectmob() {
+    if (navigator.userAgent.match(/Android/i)
+        || navigator.userAgent.match(/webOS/i)
+        || navigator.userAgent.match(/iPhone/i)
+        || navigator.userAgent.match(/iPad/i)
+        || navigator.userAgent.match(/iPod/i)
+        || navigator.userAgent.match(/BlackBerry/i)
+        || navigator.userAgent.match(/Windows Phone/i)) {
+        return true;
+    }
+    else {
+        return false;
+    }
+}
+/**
  * @param {?} segments
  * @return {?}
  */
 function serializeAppPaths(segments) {
     let /** @type {?} */ params = {
         root: 'app/index.php',
-        c: segments.length > 1 ? segments[1].path : 'home'
+        c: segments.length > 1 ? segments[1].path : 'entry'
     };
     if (params.c === 'home') {
         return params;
@@ -114,11 +136,11 @@ function serializeAppPaths(segments) {
         params.a = segments.length > 2 ? segments[2].path : 'site';
         if (params.c === 'entry') {
             params.m = segments.length > 3 ? segments[3].path : getQueryParams('m');
-            params.do = segments.length > 4 ? segments[4].path : 'list';
+            params.do = segments.length > 4 ? segments[4].path : 'index';
             params.version_id = segments.length > 5 ? segments[5].path : '1.0.0';
         }
         else {
-            params.do = segments.length > 3 ? segments[3].path : 'list';
+            params.do = segments.length > 3 ? segments[3].path : 'index';
             params.version_id = segments.length > 4 ? segments[4].path : '1.0.0';
         }
         params.type = 'app';
@@ -168,7 +190,7 @@ function serializePaths(segment) {
  */
 function getQueryParams(name) {
     let /** @type {?} */ url = parseURL();
-    return url[name];
+    return url[name] ? url[name] : window[name];
 }
 /**
  * @return {?}

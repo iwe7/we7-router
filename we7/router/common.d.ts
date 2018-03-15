@@ -15,6 +15,7 @@ export interface We7Params {
 }
 export declare function isApp(segment: UrlSegmentGroup): boolean;
 export declare function isWeb(segment: UrlSegmentGroup): boolean;
+export declare function detectmob(): boolean;
 export declare function serializeAppPaths(segments: UrlSegment[]): We7Params;
 export declare function serializeWebPaths(segments: UrlSegment[]): We7Params;
 export declare function serializePaths(segment: UrlSegmentGroup): We7Params;
