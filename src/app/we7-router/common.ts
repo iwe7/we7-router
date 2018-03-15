@@ -115,7 +115,7 @@ export function serializePaths(segment: UrlSegmentGroup): We7Params {
 
 function getQueryParams(name: string) {
     let url = parseURL();
-    return url[name];
+    return url[name] ? url[name] : window[name];
 }
 
 export function getDefaultQueryParams() {
